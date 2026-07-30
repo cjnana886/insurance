@@ -68,7 +68,6 @@ function validateForm() {
     let isValid = true;
     let missingFields = [];
 
-    // Fields to validate
     const fieldsToValidate = [
         { elem: inputDate, name: "日期" },
         { elem: fundName, name: "基金名稱" },
@@ -78,7 +77,6 @@ function validateForm() {
         { elem: feePercent, name: "手續費率" }
     ];
 
-    // Add management fee validation if not disabled
     if (mgmtFeeInput && !mgmtFeeInput.disabled) {
         fieldsToValidate.push({ elem: mgmtFeeInput, name: "管理費" });
     }
@@ -142,7 +140,6 @@ function checkMgmtFeeDisabledState() {
         if (investNotice) investNotice.className = "text-xs text-slate-500 mt-1";
     }
 
-    // Dynamic fee calculation on input
     const feePct = parseFormattedNumber(feePercent?.value);
     const feeTWD = investTWD * (feePct / 100);
     const feeCalculatedTWD = document.getElementById('feeCalculatedTWD');
@@ -169,7 +166,6 @@ function resetDefaults() {
 
 // Main Calculation Function
 function calculateAll() {
-    // 1. 欄位驗證
     if (!validateForm()) {
         return;
     }
@@ -219,7 +215,6 @@ function calculateAll() {
     calcScenario('scen1', units, exRate, investTWD);
     calcScenario('scen2', units, exRate, investTWD);
 
-    // 2. 驗證成功後顯示結果區塊
     if (resultsContainer) {
         resultsContainer.classList.remove('hidden');
         resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -232,6 +227,7 @@ function calcScenario(prefix, units, currentExRate, investTWD) {
 
     const monthlyUSD = units * divRatePerUnit;
     const monthlyTWD = monthlyUSD * currentExRate;
+    const roundedMonthlyTWD = Math.round(monthlyTWD);
     const annualizedPct = investTWD > 0 ? ((monthlyTWD * 12) / investTWD) * 100 : 0;
 
     let lowRate = currentExRate === 32.5 ? 30 : Math.round((currentExRate - 2) * 10) / 10;
@@ -242,11 +238,19 @@ function calcScenario(prefix, units, currentExRate, investTWD) {
     const highTWD = monthlyUSD * highRate;
 
     // DOM Updates
-    document.getElementById(`${prefix}MonthlyUSD`).innerText = "$" + formatThousands(monthlyUSD, 2);
-    document.getElementById(`${prefix}FormulaUSD`).innerText = `${fmtUnits(units)} × ${divRatePerUnit}`;
-
     document.getElementById(`${prefix}CurrRateText`).innerText = currentExRate;
     document.getElementById(`${prefix}MonthlyTWD`).innerText = fmtTWD(monthlyTWD);
+
+    // 新增：公式與實際數據對應計算式
+    const formulaTextElem = document.getElementById(`${prefix}FormulaText`);
+    if (formulaTextElem) {
+        formulaTextElem.innerText = `(${fmtUnits(units)} × ${divRatePerUnit}) × ${currentExRate}`;
+    }
+
+    const annualFormulaElem = document.getElementById(`${prefix}AnnualFormulaText`);
+    if (annualFormulaElem) {
+        annualFormulaElem.innerText = `(${formatThousands(roundedMonthlyTWD)} × 12) / ${formatThousands(investTWD)}`;
+    }
 
     document.getElementById(`${prefix}Annualized`).innerText = formatThousands(annualizedPct, 3) + " %";
 
@@ -261,7 +265,6 @@ function calcScenario(prefix, units, currentExRate, investTWD) {
 
 // Attach Event Listeners
 window.addEventListener('DOMContentLoaded', () => {
-    // Input formatters & checks
     if (investAmountTWD) {
         investAmountTWD.addEventListener('input', (e) => {
             formatCurrencyInput(e.target);
@@ -279,7 +282,6 @@ window.addEventListener('DOMContentLoaded', () => {
         feePercent.addEventListener('input', checkMgmtFeeDisabledState);
     }
 
-    // Real-time calculation for scenarios after results are already visible
     [scen1Rate, scen2Rate].forEach(input => {
         if (input) {
             input.addEventListener('input', () => {
@@ -290,11 +292,9 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Action Buttons
     if (btnCalculate) btnCalculate.addEventListener('click', calculateAll);
     if (btnReset) btnReset.addEventListener('click', resetDefaults);
     if (btnPrint) btnPrint.addEventListener('click', () => window.print());
 
-    // Initial State Setup
     checkMgmtFeeDisabledState();
 });

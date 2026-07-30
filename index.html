@@ -62,7 +62,7 @@
                         <input type="text" id="fundName" value="富蘭克林穩定月收益基金" placeholder="請輸入基金名稱" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
                     </div>
 
-                    <!-- 投入金額 TWD (帶千分位格式化顯示) -->
+                    <!-- 投入金額 TWD -->
                     <div>
                         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">投入金額 (TWD) <span class="text-red-500">*</span></label>
                         <div class="relative">
@@ -94,7 +94,7 @@
                         <p class="text-xs text-slate-500 mt-1">折合台幣手續費：<span id="feeCalculatedTWD" class="font-bold text-slate-700">NT$ 12,900</span></p>
                     </div>
 
-                    <!-- 管理費設定 (全寬) -->
+                    <!-- 管理費設定 -->
                     <div class="md:col-span-2 lg:col-span-3 bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
                             <div class="flex items-center gap-2">
@@ -123,7 +123,7 @@
                 </div>
             </div>
 
-            <!-- 2. 結果區塊 (預設隱藏 hidden，驗證成功後才顯示) -->
+            <!-- 2. 結果區塊 -->
             <div id="resultsContainer" class="hidden space-y-6">
 
                 <!-- 關鍵進場指標 -->
@@ -163,7 +163,7 @@
                     </div>
                 </div>
 
-                <!-- 配息試算卡片 (多情境) -->
+                <!-- 配息試算卡片 -->
                 <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-md border border-slate-200 print-card space-y-5">
                     <div class="flex justify-between items-center pb-2 border-b border-slate-200">
                         <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -185,22 +185,19 @@
                             </div>
                         </div>
 
-                        <!-- 數據展示 -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                                <span class="text-xs text-slate-500 block">每月美金配息</span>
-                                <span class="text-lg font-extrabold text-slate-800" id="scen1MonthlyUSD">$ 59.66</span>
-                                <span class="text-[10px] text-slate-400 block" id="scen1FormulaUSD">890.5087 × 0.067</span>
-                            </div>
-                            <div class="bg-emerald-600 text-white p-3 rounded-lg text-center shadow-sm">
+                        <!-- 數據展示：2 欄 (移除每月美金配息) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="bg-emerald-600 text-white p-3 rounded-lg text-center shadow-sm flex flex-col justify-center">
                                 <span class="text-xs text-emerald-100 block">每月台幣配息 (當前匯率 <span id="scen1CurrRateText">32.5</span>)</span>
-                                <span class="text-xl font-black" id="scen1MonthlyTWD">NT$ 1,939</span>
-                                <span class="text-[10px] text-emerald-200 block">每月領取的現金流</span>
+                                <span class="text-2xl font-black my-0.5" id="scen1MonthlyTWD">NT$ 1,939</span>
+                                <span class="text-[10px] text-emerald-200 block">(單位數 × 每單位配息) × 匯率</span>
+                                <span class="text-[10px] text-emerald-100 font-mono block mt-0.5" id="scen1FormulaText">(890.5087 × 0.067) × 32.5</span>
                             </div>
-                            <div class="bg-emerald-100 text-emerald-950 p-3 rounded-lg text-center border border-emerald-300">
+                            <div class="bg-emerald-100 text-emerald-950 p-3 rounded-lg text-center border border-emerald-300 flex flex-col justify-center">
                                 <span class="text-xs text-emerald-800 font-bold block">年化撥回率</span>
-                                <span class="text-xl font-black text-emerald-700" id="scen1Annualized">7.756 %</span>
-                                <span class="text-[10px] text-emerald-700 block">(月配息×12) / 投入金額</span>
+                                <span class="text-2xl font-black text-emerald-700 my-0.5" id="scen1Annualized">7.756 %</span>
+                                <span class="text-[10px] text-emerald-700 block">(月配息 × 12) / 投入金額</span>
+                                <span class="text-[10px] text-emerald-800 font-mono block mt-0.5" id="scen1AnnualFormulaText">(1,939 × 12) / 300,000</span>
                             </div>
                         </div>
 
@@ -240,22 +237,19 @@
                             </div>
                         </div>
 
-                        <!-- 數據展示 -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                                <span class="text-xs text-slate-500 block">每月美金配息</span>
-                                <span class="text-lg font-extrabold text-slate-800" id="scen2MonthlyUSD">$ 48.98</span>
-                                <span class="text-[10px] text-slate-400 block" id="scen2FormulaUSD">890.5087 × 0.055</span>
-                            </div>
-                            <div class="bg-slate-700 text-white p-3 rounded-lg text-center shadow-sm">
+                        <!-- 數據展示：2 欄 (移除每月美金配息) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="bg-slate-700 text-white p-3 rounded-lg text-center shadow-sm flex flex-col justify-center">
                                 <span class="text-xs text-slate-200 block">每月台幣配息 (當前匯率 <span id="scen2CurrRateText">32.5</span>)</span>
-                                <span class="text-xl font-black" id="scen2MonthlyTWD">NT$ 1,591</span>
-                                <span class="text-[10px] text-slate-300 block">保守預估金額</span>
+                                <span class="text-2xl font-black my-0.5" id="scen2MonthlyTWD">NT$ 1,591</span>
+                                <span class="text-[10px] text-slate-300 block">(單位數 × 每單位配息) × 匯率</span>
+                                <span class="text-[10px] text-slate-200 font-mono block mt-0.5" id="scen2FormulaText">(890.5087 × 0.055) × 32.5</span>
                             </div>
-                            <div class="bg-slate-200 text-slate-900 p-3 rounded-lg text-center border border-slate-300">
+                            <div class="bg-slate-200 text-slate-900 p-3 rounded-lg text-center border border-slate-300 flex flex-col justify-center">
                                 <span class="text-xs text-slate-700 font-bold block">年化撥回率</span>
-                                <span class="text-xl font-black text-slate-800" id="scen2Annualized">6.364 %</span>
-                                <span class="text-[10px] text-slate-600 block">(月配息×12) / 投入金額</span>
+                                <span class="text-2xl font-black text-slate-800 my-0.5" id="scen2Annualized">6.364 %</span>
+                                <span class="text-[10px] text-slate-600 block">(月配息 × 12) / 投入金額</span>
+                                <span class="text-[10px] text-slate-700 font-mono block mt-0.5" id="scen2AnnualFormulaText">(1,591 × 12) / 300,000</span>
                             </div>
                         </div>
 
