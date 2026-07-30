@@ -10,71 +10,174 @@ const mgmtFeeInput = document.getElementById('mgmtFeeInput');
 const scen1Rate = document.getElementById('scen1Rate');
 const scen2Rate = document.getElementById('scen2Rate');
 
-const btnFee43 = document.getElementById('btnFee43');
-const btnFee55 = document.getElementById('btnFee55');
-const btnFeeCustom = document.getElementById('btnFeeCustom');
 const btnReset = document.getElementById('btnReset');
 const btnPrint = document.getElementById('btnPrint');
+const btnCalculate = document.getElementById('btnCalculate');
+const resultsContainer = document.getElementById('resultsContainer');
+const validationError = document.getElementById('validationError');
+const validationErrorText = document.getElementById('validationErrorText');
 
-// Preset Date to Today YYYY-MM-DD
+// Utility: Number formatting with thousands separator
+function parseFormattedNumber(val) {
+    if (typeof val === 'number') return val;
+    if (!val) return 0;
+    return parseFloat(val.toString().replace(/,/g, '')) || 0;
+}
+
+function formatThousands(val, decimals = 0) {
+    const num = parseFormattedNumber(val);
+    return num.toLocaleString('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+    });
+}
+
+function fmtTWD(num) {
+    return "NT$ " + formatThousands(num, 0);
+}
+
+function fmtUSD(num) {
+    return "$" + formatThousands(num, 2) + " USD";
+}
+
+function fmtUnits(num) {
+    return formatThousands(num, 4);
+}
+
+// Format Input Fields with Thousands Separators
+function formatCurrencyInput(inputElem) {
+    let rawVal = inputElem.value.replace(/[^0-9.]/g, '');
+    if (rawVal === '') {
+        inputElem.value = '';
+        return;
+    }
+    let parts = rawVal.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    inputElem.value = parts.join('.');
+}
+
+// Preset Date YYYY-MM-DD
 const today = new Date();
 const yyyy = today.getFullYear();
 const mm = String(today.getMonth() + 1).padStart(2, '0');
 const dd = String(today.getDate()).padStart(2, '0');
 if (inputDate) inputDate.value = `${yyyy}-${mm}-${dd}`;
 
-// Set Fee Rate Handler
-function setFeeRate(rate, name) {
-    if (feePercent) feePercent.value = rate;
-    updateActiveFeeButton(name);
-    calculateAll();
+// Form Validation
+function validateForm() {
+    let isValid = true;
+    let missingFields = [];
+
+    // Fields to validate
+    const fieldsToValidate = [
+        { elem: inputDate, name: "日期" },
+        { elem: fundName, name: "基金名稱" },
+        { elem: investAmountTWD, name: "投入金額" },
+        { elem: navUSD, name: "淨值" },
+        { elem: exchangeRate, name: "美金匯率" },
+        { elem: feePercent, name: "手續費率" }
+    ];
+
+    // Add management fee validation if not disabled
+    if (mgmtFeeInput && !mgmtFeeInput.disabled) {
+        fieldsToValidate.push({ elem: mgmtFeeInput, name: "管理費" });
+    }
+
+    fieldsToValidate.forEach(field => {
+        if (!field.elem) return;
+        const val = field.elem.value.trim();
+        if (val === '' || val === null) {
+            isValid = false;
+            missingFields.push(field.name);
+            field.elem.classList.add('border-red-500', 'bg-red-50');
+            field.elem.classList.remove('border-slate-300', 'bg-slate-50');
+        } else {
+            field.elem.classList.remove('border-red-500', 'bg-red-50');
+            field.elem.classList.add('border-slate-300', 'bg-slate-50');
+        }
+    });
+
+    if (!isValid) {
+        if (validationError && validationErrorText) {
+            validationErrorText.innerText = `請填寫以下欄位（不可為空）：${missingFields.join('、')}`;
+            validationError.classList.remove('hidden');
+        }
+        if (resultsContainer) {
+            resultsContainer.classList.add('hidden');
+        }
+    } else {
+        if (validationError) {
+            validationError.classList.add('hidden');
+        }
+    }
+
+    return isValid;
 }
 
-function updateActiveFeeButton(name) {
-    document.querySelectorAll('.fee-btn').forEach(btn => {
-        btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
-        btn.classList.add('bg-white', 'text-slate-700', 'border-slate-300');
-    });
-    if (name === 'DSVA' && btnFee43) {
-        btnFee43.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
-    } else if (name === 'KVA' && btnFee55) {
-        btnFee55.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
-    } else if (btnFeeCustom) {
-        btnFeeCustom.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+// Management Fee disabled state check
+function checkMgmtFeeDisabledState() {
+    const investTWD = parseFormattedNumber(investAmountTWD?.value);
+    const mgmtFeeStatus = document.getElementById('mgmtFeeStatus');
+    const investNotice = document.getElementById('investAmountNotice');
+
+    if (investTWD >= 1200000) {
+        if (mgmtFeeStatus) {
+            mgmtFeeStatus.innerText = "滿 1,200,000 免收管理費";
+            mgmtFeeStatus.className = "text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
+        }
+        if (investNotice) investNotice.className = "text-xs text-emerald-600 font-bold mt-1";
+        if (mgmtFeeInput) {
+            mgmtFeeInput.disabled = true;
+            mgmtFeeInput.value = "0";
+            mgmtFeeInput.classList.remove('border-red-500', 'bg-red-50');
+        }
+    } else {
+        if (mgmtFeeInput) {
+            mgmtFeeInput.disabled = false;
+        }
+        if (mgmtFeeStatus) {
+            mgmtFeeStatus.innerText = "未滿 1,200,000 收取管理費";
+            mgmtFeeStatus.className = "text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+        }
+        if (investNotice) investNotice.className = "text-xs text-slate-500 mt-1";
+    }
+
+    // Dynamic fee calculation on input
+    const feePct = parseFormattedNumber(feePercent?.value);
+    const feeTWD = investTWD * (feePct / 100);
+    const feeCalculatedTWD = document.getElementById('feeCalculatedTWD');
+    if (feeCalculatedTWD) {
+        feeCalculatedTWD.innerText = fmtTWD(feeTWD);
     }
 }
 
-// Reset to default values
+// Reset to Defaults
 function resetDefaults() {
     if (fundName) fundName.value = "富蘭克林穩定月收益基金";
     if (navUSD) navUSD.value = 9.92;
     if (exchangeRate) exchangeRate.value = 32.5;
-    if (investAmountTWD) investAmountTWD.value = 300000;
+    if (investAmountTWD) investAmountTWD.value = "300,000";
     if (feePercent) feePercent.value = 4.3;
-    if (mgmtFeeInput) mgmtFeeInput.value = 100;
+    if (mgmtFeeInput) mgmtFeeInput.value = "100";
     if (scen1Rate) scen1Rate.value = 0.067;
     if (scen2Rate) scen2Rate.value = 0.055;
-    updateActiveFeeButton('DSVA');
-    calculateAll();
-}
-
-// Formatters
-function fmtTWD(num) {
-    return "NT$ " + Math.round(num).toLocaleString('zh-TW');
-}
-function fmtUSD(num) {
-    return "$" + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function fmtUnits(num) {
-    return num.toFixed(4);
+    
+    checkMgmtFeeDisabledState();
+    if (validationError) validationError.classList.add('hidden');
+    if (resultsContainer) resultsContainer.classList.add('hidden');
 }
 
 // Main Calculation Function
 function calculateAll() {
-    const nav = parseFloat(navUSD?.value) || 0;
-    const exRate = parseFloat(exchangeRate?.value) || 1;
-    const investTWD = parseFloat(investAmountTWD?.value) || 0;
-    const feePct = parseFloat(feePercent?.value) || 0;
+    // 1. 欄位驗證
+    if (!validateForm()) {
+        return;
+    }
+
+    const nav = parseFormattedNumber(navUSD?.value);
+    const exRate = parseFormattedNumber(exchangeRate?.value) || 1;
+    const investTWD = parseFormattedNumber(investAmountTWD?.value);
+    const feePct = parseFormattedNumber(feePercent?.value);
 
     // Display Date
     const displayDate = document.getElementById('displayDate');
@@ -82,35 +185,9 @@ function calculateAll() {
         displayDate.innerText = `試算日期：${inputDate.value}`;
     }
 
-    // Mgmt Fee Logic
-    let mgmtTWD = 0;
-    const mgmtFeeStatus = document.getElementById('mgmtFeeStatus');
-    const investNotice = document.getElementById('investAmountNotice');
+    let mgmtTWD = investTWD >= 1200000 ? 0 : parseFormattedNumber(mgmtFeeInput?.value);
 
-    if (investTWD >= 1200000) {
-        mgmtTWD = 0;
-        if (mgmtFeeStatus) {
-            mgmtFeeStatus.innerText = "滿120萬 免收管理費";
-            mgmtFeeStatus.className = "text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
-        }
-        if (investNotice) investNotice.className = "text-xs text-emerald-600 font-bold mt-1";
-        if (mgmtFeeInput) {
-            mgmtFeeInput.disabled = true;
-            mgmtFeeInput.value = 0;
-        }
-    } else {
-        if (mgmtFeeInput) {
-            mgmtFeeInput.disabled = false;
-            mgmtTWD = parseFloat(mgmtFeeInput.value) || 0;
-        }
-        if (mgmtFeeStatus) {
-            mgmtFeeStatus.innerText = "未滿120萬 收取管理費";
-            mgmtFeeStatus.className = "text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
-        }
-        if (investNotice) investNotice.className = "text-xs text-slate-500 mt-1";
-    }
-
-    // Math
+    // Mathematical Calculations
     const feeTWD = investTWD * (feePct / 100);
     const feeUSD = exRate > 0 ? feeTWD / exRate : 0;
 
@@ -122,55 +199,56 @@ function calculateAll() {
     const mgmtUSD = exRate > 0 ? mgmtTWD / exRate : 0;
     const mgmtUnits = nav > 0 ? mgmtUSD / nav : 0;
 
-    // Update DOM - Step 1 & 2
+    // Update DOM Results
     document.getElementById('feeCalculatedTWD').innerText = fmtTWD(feeTWD);
     document.getElementById('resFeeTWD').innerText = fmtTWD(feeTWD);
-    document.getElementById('resFeeUSD').innerText = fmtUSD(feeUSD) + " USD";
+    document.getElementById('resFeeUSD').innerText = fmtUSD(feeUSD);
 
     document.getElementById('resActualTWD').innerText = fmtTWD(actualTWD);
-    document.getElementById('resActualUSD').innerText = fmtUSD(actualUSD) + " USD";
+    document.getElementById('resActualUSD').innerText = fmtUSD(actualUSD);
 
     document.getElementById('resUnits').innerText = fmtUnits(units);
 
     const mgmtFeeDetails = document.getElementById('mgmtFeeDetails');
     if (mgmtFeeDetails) {
-        mgmtFeeDetails.innerHTML =
-            `管理費 <b>NT$ ${mgmtTWD}</b> ＝ <b>${fmtUSD(mgmtUSD)} USD</b> ，換算單位數 <b>${mgmtUnits.toFixed(4)} 單位</b>`;
+        mgmtFeeDetails.innerHTML = 
+            `管理費 <b>NT$ ${formatThousands(mgmtTWD)}</b> ＝ <b>${fmtUSD(mgmtUSD)}</b> ，換算單位數 <b>${mgmtUnits.toFixed(4)} 單位</b>`;
     }
 
     // Scenarios
     calcScenario('scen1', units, exRate, investTWD);
     calcScenario('scen2', units, exRate, investTWD);
+
+    // 2. 驗證成功後顯示結果區塊
+    if (resultsContainer) {
+        resultsContainer.classList.remove('hidden');
+        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 function calcScenario(prefix, units, currentExRate, investTWD) {
     const rateElem = document.getElementById(`${prefix}Rate`);
-    const divRatePerUnit = parseFloat(rateElem?.value) || 0;
+    const divRatePerUnit = parseFormattedNumber(rateElem?.value);
 
     const monthlyUSD = units * divRatePerUnit;
     const monthlyTWD = monthlyUSD * currentExRate;
     const annualizedPct = investTWD > 0 ? ((monthlyTWD * 12) / investTWD) * 100 : 0;
 
-    let lowRate = 30;
-    let highRate = 33;
-
-    if (currentExRate !== 32.5) {
-        lowRate = Math.round((currentExRate - 2) * 10) / 10;
-        highRate = Math.round((currentExRate + 2) * 10) / 10;
-    }
+    let lowRate = currentExRate === 32.5 ? 30 : Math.round((currentExRate - 2) * 10) / 10;
+    let highRate = currentExRate + 1.0;
 
     const lowTWD = monthlyUSD * lowRate;
     const midTWD = monthlyTWD;
     const highTWD = monthlyUSD * highRate;
 
     // DOM Updates
-    document.getElementById(`${prefix}MonthlyUSD`).innerText = fmtUSD(monthlyUSD);
-    document.getElementById(`${prefix}FormulaUSD`).innerText = `${units.toFixed(4)} × ${divRatePerUnit}`;
+    document.getElementById(`${prefix}MonthlyUSD`).innerText = "$" + formatThousands(monthlyUSD, 2);
+    document.getElementById(`${prefix}FormulaUSD`).innerText = `${fmtUnits(units)} × ${divRatePerUnit}`;
 
     document.getElementById(`${prefix}CurrRateText`).innerText = currentExRate;
     document.getElementById(`${prefix}MonthlyTWD`).innerText = fmtTWD(monthlyTWD);
 
-    document.getElementById(`${prefix}Annualized`).innerText = annualizedPct.toFixed(3) + " %";
+    document.getElementById(`${prefix}Annualized`).innerText = formatThousands(annualizedPct, 3) + " %";
 
     document.getElementById(`${prefix}LowRateText`).innerText = lowRate;
     document.getElementById(`${prefix}MidRateText`).innerText = currentExRate;
@@ -183,28 +261,40 @@ function calcScenario(prefix, units, currentExRate, investTWD) {
 
 // Attach Event Listeners
 window.addEventListener('DOMContentLoaded', () => {
-    // Input change listeners
-    const inputs = [
-        inputDate, fundName, navUSD, exchangeRate,
-        investAmountTWD, feePercent, mgmtFeeInput,
-        scen1Rate, scen2Rate
-    ];
+    // Input formatters & checks
+    if (investAmountTWD) {
+        investAmountTWD.addEventListener('input', (e) => {
+            formatCurrencyInput(e.target);
+            checkMgmtFeeDisabledState();
+        });
+    }
 
-    inputs.forEach(input => {
+    if (mgmtFeeInput) {
+        mgmtFeeInput.addEventListener('input', (e) => {
+            formatCurrencyInput(e.target);
+        });
+    }
+
+    if (feePercent) {
+        feePercent.addEventListener('input', checkMgmtFeeDisabledState);
+    }
+
+    // Real-time calculation for scenarios after results are already visible
+    [scen1Rate, scen2Rate].forEach(input => {
         if (input) {
-            input.addEventListener('input', calculateAll);
-            input.addEventListener('change', calculateAll);
+            input.addEventListener('input', () => {
+                if (resultsContainer && !resultsContainer.classList.contains('hidden')) {
+                    calculateAll();
+                }
+            });
         }
     });
 
-    // Buttons
-    if (btnFee43) btnFee43.addEventListener('click', () => setFeeRate(4.3, 'DSVA'));
-    if (btnFee55) btnFee55.addEventListener('click', () => setFeeRate(5.5, 'KVA'));
-    if (btnFeeCustom) btnFeeCustom.addEventListener('click', () => setFeeRate(0, 'Custom'));
+    // Action Buttons
+    if (btnCalculate) btnCalculate.addEventListener('click', calculateAll);
     if (btnReset) btnReset.addEventListener('click', resetDefaults);
     if (btnPrint) btnPrint.addEventListener('click', () => window.print());
 
-    // Initial render
-    updateActiveFeeButton('DSVA');
-    calculateAll();
+    // Initial State Setup
+    checkMgmtFeeDisabledState();
 });
