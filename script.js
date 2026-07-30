@@ -14,6 +14,7 @@ const btnReset = document.getElementById('btnReset');
 const btnPrint = document.getElementById('btnPrint');
 const btnCalculate = document.getElementById('btnCalculate');
 const resultsContainer = document.getElementById('resultsContainer');
+const afterYearCard = document.getElementById('afterYearCard');
 const validationError = document.getElementById('validationError');
 const validationErrorText = document.getElementById('validationErrorText');
 
@@ -132,6 +133,10 @@ function checkMgmtFeeDisabledState() {
     } else {
         if (mgmtFeeInput) {
             mgmtFeeInput.disabled = false;
+            const currentVal = parseFormattedNumber(mgmtFeeInput.value);
+            if (currentVal === 0 || mgmtFeeInput.value === '0') {
+                mgmtFeeInput.value = "100";
+            }
         }
         if (mgmtFeeStatus) {
             mgmtFeeStatus.innerText = "未滿 1,200,000 收取管理費";
@@ -211,9 +216,17 @@ function calculateAll() {
             `管理費 <b>NT$ ${formatThousands(mgmtTWD)}</b> ＝ <b>${fmtUSD(mgmtUSD)}</b> ，換算單位數 <b>${mgmtUnits.toFixed(4)} 單位</b>`;
     }
 
-    // Scenarios
+    // Scenarios (首年)
     calcScenario('scen1', units, exRate, investTWD);
     calcScenario('scen2', units, exRate, investTWD);
+
+    // 根據投入金額是否滿 120W 決定是否顯示「一年後管理費扣除與配息試算區塊」
+    if (investTWD >= 1200000) {
+        if (afterYearCard) afterYearCard.classList.add('hidden');
+    } else {
+        if (afterYearCard) afterYearCard.classList.remove('hidden');
+        calcAfterOneYear(units, mgmtUnits, exRate);
+    }
 
     if (resultsContainer) {
         resultsContainer.classList.remove('hidden');
@@ -241,7 +254,6 @@ function calcScenario(prefix, units, currentExRate, investTWD) {
     document.getElementById(`${prefix}CurrRateText`).innerText = currentExRate;
     document.getElementById(`${prefix}MonthlyTWD`).innerText = fmtTWD(monthlyTWD);
 
-    // 新增：公式與實際數據對應計算式
     const formulaTextElem = document.getElementById(`${prefix}FormulaText`);
     if (formulaTextElem) {
         formulaTextElem.innerText = `(${fmtUnits(units)} × ${divRatePerUnit}) × ${currentExRate}`;
@@ -261,6 +273,35 @@ function calcScenario(prefix, units, currentExRate, investTWD) {
     document.getElementById(`${prefix}LowTWD`).innerText = fmtTWD(lowTWD);
     document.getElementById(`${prefix}MidTWD`).innerText = fmtTWD(midTWD);
     document.getElementById(`${prefix}HighTWD`).innerText = fmtTWD(highTWD);
+}
+
+function calcAfterOneYear(initialUnits, monthlyMgmtUnits, currentExRate) {
+    const divRatePerUnit = parseFormattedNumber(scen1Rate?.value) || 0.067;
+    const yearMgmtUnits = monthlyMgmtUnits * 12;
+    const remainingUnits = initialUnits - yearMgmtUnits;
+
+    const afterYearMonthlyUSD = remainingUnits * divRatePerUnit;
+    const afterYearMonthlyTWD = afterYearMonthlyUSD * currentExRate;
+
+    const afterYearUnitsDetail = document.getElementById('afterYearUnitsDetail');
+    if (afterYearUnitsDetail) {
+        afterYearUnitsDetail.innerText = 
+            `${fmtUnits(initialUnits)} - (${monthlyMgmtUnits.toFixed(4)} × 12) = ${fmtUnits(remainingUnits)} 單位`;
+    }
+
+    const afterYearRateText = document.getElementById('afterYearRateText');
+    if (afterYearRateText) afterYearRateText.innerText = currentExRate;
+
+    const afterYearMonthlyTWDElem = document.getElementById('afterYearMonthlyTWD');
+    if (afterYearMonthlyTWDElem) {
+        afterYearMonthlyTWDElem.innerText = fmtTWD(afterYearMonthlyTWD);
+    }
+
+    const afterYearCalcFormula = document.getElementById('afterYearCalcFormula');
+    if (afterYearCalcFormula) {
+        afterYearCalcFormula.innerText = 
+            `${fmtUnits(remainingUnits)} × ${divRatePerUnit} × ${currentExRate} = ${formatThousands(Math.round(afterYearMonthlyTWD))}`;
+    }
 }
 
 // Attach Event Listeners
