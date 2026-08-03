@@ -8,7 +8,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Retro Arcade Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Righteous&family=VT323&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
+        .font-pixel { font-family: 'Press Start 2P', cursive; }
+        .font-arcade { font-family: 'VT323', monospace; }
+        .font-heading { font-family: 'Righteous', 'Noto Sans TC', cursive; }
+        body { font-family: 'Noto Sans TC', sans-serif; }
+
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; font-size: 12pt; }
@@ -20,22 +29,24 @@
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
 
-    <!-- Top Navigation Bar -->
-    <nav class="bg-slate-900 text-white shadow-md no-print border-b border-slate-800">
+    <!-- Game Style Navigation Bar -->
+    <nav class="bg-slate-950 border-b-4 border-indigo-600 shadow-md no-print sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-3">
-                    <a href="index.html" class="flex items-center gap-2 text-emerald-400 font-bold text-lg hover:text-emerald-300 transition">
-                        <i class="fa-solid fa-chart-line text-xl"></i>
-                        <span>保險財務試算系統</span>
+                    <a href="index.html" class="flex items-center gap-2.5 group">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-600 border-2 border-yellow-400 flex items-center justify-center text-yellow-300 shadow-[0_3px_0_#312e81]">
+                            <i class="fa-solid fa-gamepad text-base"></i>
+                        </div>
+                        <span class="text-yellow-400 font-extrabold text-sm tracking-wider">INSURE GAME</span>
                     </a>
                 </div>
-                <div class="flex items-center space-x-1 sm:space-x-4 text-sm font-medium">
-                    <a href="index.html" class="text-slate-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-house text-xs"></i> 首頁
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <a href="index.html" class="text-xs sm:text-sm text-slate-300 hover:bg-slate-800 hover:text-yellow-400 px-3.5 py-2 rounded font-extrabold transition flex items-center gap-1.5 border border-slate-800">
+                        <i class="fa-solid fa-house"></i> 首頁
                     </a>
-                    <a href="lump-sum.html" class="bg-emerald-600 text-white px-3 py-2 rounded-md font-semibold transition flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-calculator text-xs"></i> 躉繳現金流試算
+                    <a href="lump-sum.html" class="text-xs sm:text-sm bg-emerald-600 text-white px-3.5 py-2 rounded font-extrabold transition flex items-center gap-1.5 border border-emerald-400 shadow-[0_3px_0_#064e3b]">
+                        <i class="fa-solid fa-calculator"></i> 躉繳現金流試算
                     </a>
                 </div>
             </div>
