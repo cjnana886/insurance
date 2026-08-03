@@ -47,6 +47,7 @@ function fmtUnits(num) {
 
 // Format Input Fields with Thousands Separators
 function formatCurrencyInput(inputElem) {
+    if (!inputElem) return;
     let rawVal = inputElem.value.replace(/[^0-9.]/g, '');
     if (rawVal === '') {
         inputElem.value = '';
@@ -115,7 +116,8 @@ function validateForm() {
 
 // Management Fee disabled state check
 function checkMgmtFeeDisabledState() {
-    const investTWD = parseFormattedNumber(investAmountTWD?.value);
+    if (!investAmountTWD) return;
+    const investTWD = parseFormattedNumber(investAmountTWD.value);
     const mgmtFeeStatus = document.getElementById('mgmtFeeStatus');
     const investNotice = document.getElementById('investAmountNotice');
 
@@ -200,15 +202,18 @@ function calculateAll() {
     const mgmtUSD = exRate > 0 ? mgmtTWD / exRate : 0;
     const mgmtUnits = nav > 0 ? mgmtUSD / nav : 0;
 
-    // Update DOM Results
-    document.getElementById('feeCalculatedTWD').innerText = fmtTWD(feeTWD);
-    document.getElementById('resFeeTWD').innerText = fmtTWD(feeTWD);
-    document.getElementById('resFeeUSD').innerText = fmtUSD(feeUSD);
+    // Update DOM Results safely
+    const setElemText = (id, text) => {
+        const elem = document.getElementById(id);
+        if (elem) elem.innerText = text;
+    };
 
-    document.getElementById('resActualTWD').innerText = fmtTWD(actualTWD);
-    document.getElementById('resActualUSD').innerText = fmtUSD(actualUSD);
-
-    document.getElementById('resUnits').innerText = fmtUnits(units);
+    setElemText('feeCalculatedTWD', fmtTWD(feeTWD));
+    setElemText('resFeeTWD', fmtTWD(feeTWD));
+    setElemText('resFeeUSD', fmtUSD(feeUSD));
+    setElemText('resActualTWD', fmtTWD(actualTWD));
+    setElemText('resActualUSD', fmtUSD(actualUSD));
+    setElemText('resUnits', fmtUnits(units));
 
     const mgmtFeeDetails = document.getElementById('mgmtFeeDetails');
     if (mgmtFeeDetails) {
@@ -250,9 +255,14 @@ function calcScenario(prefix, units, currentExRate, investTWD) {
     const midTWD = monthlyTWD;
     const highTWD = monthlyUSD * highRate;
 
-    // DOM Updates
-    document.getElementById(`${prefix}CurrRateText`).innerText = currentExRate;
-    document.getElementById(`${prefix}MonthlyTWD`).innerText = fmtTWD(monthlyTWD);
+    // DOM Updates safely
+    const setElemText = (id, text) => {
+        const elem = document.getElementById(id);
+        if (elem) elem.innerText = text;
+    };
+
+    setElemText(`${prefix}CurrRateText`, currentExRate);
+    setElemText(`${prefix}MonthlyTWD`, fmtTWD(monthlyTWD));
 
     const formulaTextElem = document.getElementById(`${prefix}FormulaText`);
     if (formulaTextElem) {
@@ -264,15 +274,15 @@ function calcScenario(prefix, units, currentExRate, investTWD) {
         annualFormulaElem.innerText = `(${formatThousands(roundedMonthlyTWD)} × 12) / ${formatThousands(investTWD)}`;
     }
 
-    document.getElementById(`${prefix}Annualized`).innerText = formatThousands(annualizedPct, 3) + " %";
+    setElemText(`${prefix}Annualized`, formatThousands(annualizedPct, 3) + " %");
 
-    document.getElementById(`${prefix}LowRateText`).innerText = lowRate;
-    document.getElementById(`${prefix}MidRateText`).innerText = currentExRate;
-    document.getElementById(`${prefix}HighRateText`).innerText = highRate;
+    setElemText(`${prefix}LowRateText`, lowRate);
+    setElemText(`${prefix}MidRateText`, currentExRate);
+    setElemText(`${prefix}HighRateText`, highRate);
 
-    document.getElementById(`${prefix}LowTWD`).innerText = fmtTWD(lowTWD);
-    document.getElementById(`${prefix}MidTWD`).innerText = fmtTWD(midTWD);
-    document.getElementById(`${prefix}HighTWD`).innerText = fmtTWD(highTWD);
+    setElemText(`${prefix}LowTWD`, fmtTWD(lowTWD));
+    setElemText(`${prefix}MidTWD`, fmtTWD(midTWD));
+    setElemText(`${prefix}HighTWD`, fmtTWD(highTWD));
 }
 
 function calcAfterOneYear(initialUnits, monthlyMgmtUnits, currentExRate) {
