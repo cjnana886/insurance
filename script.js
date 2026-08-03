@@ -202,7 +202,7 @@ function calculateAll() {
     const mgmtUSD = exRate > 0 ? mgmtTWD / exRate : 0;
     const mgmtUnits = nav > 0 ? mgmtUSD / nav : 0;
 
-    // Update DOM Results safely
+    // Update Screen DOM Results safely
     const setElemText = (id, text) => {
         const elem = document.getElementById(id);
         if (elem) elem.innerText = text;
@@ -232,6 +232,9 @@ function calculateAll() {
         if (afterYearCard) afterYearCard.classList.remove('hidden');
         calcAfterOneYear(units, mgmtUnits, exRate);
     }
+
+    // Populate A4 Print Report Data
+    populatePrintReport(investTWD, feeTWD, feeUSD, exRate, nav, actualTWD, actualUSD, mgmtTWD, mgmtUnits, units);
 
     if (resultsContainer) {
         resultsContainer.classList.remove('hidden');
@@ -314,6 +317,105 @@ function calcAfterOneYear(initialUnits, monthlyMgmtUnits, currentExRate) {
     }
 }
 
+// Populate A4 Clean Print Report
+function populatePrintReport(investTWD, feeTWD, feeUSD, exRate, nav, actualTWD, actualUSD, mgmtTWD, mgmtUnits, units) {
+    const setElemText = (id, text) => {
+        const elem = document.getElementById(id);
+        if (elem) elem.innerText = text;
+    };
+    const setElemHTML = (id, html) => {
+        const elem = document.getElementById(id);
+        if (elem) elem.innerHTML = html;
+    };
+
+    const fundVal = fundName?.value || '';
+    const feePctVal = parseFormattedNumber(feePercent?.value);
+
+    setElemText('printReportFundTitle', `基金名稱：${fundVal}`);
+    setElemText('printReportDate', `試算日期：${inputDate?.value || ''}`);
+    setElemText('printInvestTWD', fmtTWD(investTWD));
+    setElemText('printFeeLabel', `手續費金額 (${feePctVal}%)`);
+    
+    // 美元金額斷行顯示
+    setElemHTML('printFeeTWD', `${fmtTWD(feeTWD)}<br><span class="text-[10px] text-slate-600 font-normal">(${fmtUSD(feeUSD)})</span>`);
+    
+    setElemText('printExRate', `${exRate}`);
+    setElemText('printNavUSD', `$${nav} USD`);
+    setElemHTML('printActualTWD', `${fmtTWD(actualTWD)}<br><span class="text-[10px] text-slate-600 font-normal">(${fmtUSD(actualUSD)})</span>`);
+
+    if (investTWD >= 1200000) {
+        setElemText('printMgmtFee', '滿 1,200,000 免收管理費');
+    } else {
+        setElemText('printMgmtFee', `NT$ ${formatThousands(mgmtTWD)} /月 (換算 ${mgmtUnits.toFixed(4)} 單位/月)`);
+    }
+
+    setElemText('printUnits', `${fmtUnits(units)} 單位`);
+
+    // Exchange Rate Sensitivity Calculations
+    let lowRate = exRate === 32.5 ? 30 : Math.round((exRate - 2) * 10) / 10;
+    let highRate = exRate + 1.0;
+
+    ['printLowRateText1', 'printLowRateText2'].forEach(id => setElemText(id, lowRate));
+    ['printMidRateText1', 'printMidRateText2'].forEach(id => setElemText(id, exRate));
+    ['printHighRateText1', 'printHighRateText2'].forEach(id => setElemText(id, highRate));
+
+    // Scenario A (常用/預期配息率)
+    const rate1 = parseFormattedNumber(scen1Rate?.value) || 0.067;
+    const scen1MonthlyUSD = units * rate1;
+    const scen1MidTWD = scen1MonthlyUSD * exRate;
+    const scen1LowTWD = scen1MonthlyUSD * lowRate;
+    const scen1HighTWD = scen1MonthlyUSD * highRate;
+
+    const scen1LowAnnual = investTWD > 0 ? ((scen1LowTWD * 12) / investTWD) * 100 : 0;
+    const scen1MidAnnual = investTWD > 0 ? ((scen1MidTWD * 12) / investTWD) * 100 : 0;
+    const scen1HighAnnual = investTWD > 0 ? ((scen1HighTWD * 12) / investTWD) * 100 : 0;
+
+    setElemText('printScen1Rate', `${rate1} USD`);
+    setElemText('printScen1LowTWD', fmtTWD(scen1LowTWD));
+    setElemText('printScen1MidTWD', fmtTWD(scen1MidTWD));
+    setElemText('printScen1HighTWD', fmtTWD(scen1HighTWD));
+
+    setElemText('printScen1LowAnnual', `${formatThousands(scen1LowAnnual, 3)} %`);
+    setElemText('printScen1MidAnnual', `${formatThousands(scen1MidAnnual, 3)} %`);
+    setElemText('printScen1HighAnnual', `${formatThousands(scen1HighAnnual, 3)} %`);
+
+    // Scenario B (保守/極端配息率)
+    const rate2 = parseFormattedNumber(scen2Rate?.value) || 0.055;
+    const scen2MonthlyUSD = units * rate2;
+    const scen2MidTWD = scen2MonthlyUSD * exRate;
+    const scen2LowTWD = scen2MonthlyUSD * lowRate;
+    const scen2HighTWD = scen2MonthlyUSD * highRate;
+
+    const scen2LowAnnual = investTWD > 0 ? ((scen2LowTWD * 12) / investTWD) * 100 : 0;
+    const scen2MidAnnual = investTWD > 0 ? ((scen2MidTWD * 12) / investTWD) * 100 : 0;
+    const scen2HighAnnual = investTWD > 0 ? ((scen2HighTWD * 12) / investTWD) * 100 : 0;
+
+    setElemText('printScen2Rate', `${rate2} USD`);
+    setElemText('printScen2LowTWD', fmtTWD(scen2LowTWD));
+    setElemText('printScen2MidTWD', fmtTWD(scen2MidTWD));
+    setElemText('printScen2HighTWD', fmtTWD(scen2HighTWD));
+
+    setElemText('printScen2LowAnnual', `${formatThousands(scen2LowAnnual, 3)} %`);
+    setElemText('printScen2MidAnnual', `${formatThousands(scen2MidAnnual, 3)} %`);
+    setElemText('printScen2HighAnnual', `${formatThousands(scen2HighAnnual, 3)} %`);
+
+    // After 1 year
+    const printAfterSection = document.getElementById('printAfterYearSection');
+    if (investTWD >= 1200000) {
+        if (printAfterSection) printAfterSection.classList.add('hidden');
+    } else {
+        if (printAfterSection) printAfterSection.classList.remove('hidden');
+        const remainingUnits = units - (mgmtUnits * 12);
+        const afterMonthlyTWD = remainingUnits * rate1 * exRate;
+        setElemText('printAfterUnits', `${fmtUnits(remainingUnits)} 單位`);
+        setElemText('printAfterMonthly', fmtTWD(afterMonthlyTWD));
+    }
+
+    // Timestamp
+    const now = new Date();
+    setElemText('printReportTimestamp', now.toLocaleString('zh-TW'));
+}
+
 // Attach Event Listeners
 window.addEventListener('DOMContentLoaded', () => {
     if (investAmountTWD) {
@@ -345,7 +447,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (btnCalculate) btnCalculate.addEventListener('click', calculateAll);
     if (btnReset) btnReset.addEventListener('click', resetDefaults);
-    if (btnPrint) btnPrint.addEventListener('click', () => window.print());
+
+    if (btnPrint) {
+        btnPrint.addEventListener('click', () => {
+            if (validateForm()) {
+                calculateAll();
+                window.print();
+            }
+        });
+    }
 
     checkMgmtFeeDisabledState();
 });

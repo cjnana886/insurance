@@ -8,45 +8,67 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Retro Arcade Google Fonts -->
+    <!-- Google Fonts: Silkscreen + Noto Sans TC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Righteous&family=VT323&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
-        .font-pixel { font-family: 'Press Start 2P', cursive; }
-        .font-arcade { font-family: 'VT323', monospace; }
-        .font-heading { font-family: 'Righteous', 'Noto Sans TC', cursive; }
         body { font-family: 'Noto Sans TC', sans-serif; }
+        .font-pixel-title { font-family: 'Silkscreen', 'Noto Sans TC', cursive; }
 
         @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; font-size: 12pt; }
-            .print-card { shadow: none !important; border: 1px solid #ccc !important; }
-            #resultsContainer { display: block !important; }
-            #afterYearCard { display: block !important; }
+            @page {
+                size: A4 portrait;
+                margin: 0; /* 完全移除瀏覽器預設頁首頁尾 (包含日期、時間與網頁標題) */
+            }
+            body {
+                background: white !important;
+                color: #0f172a !important;
+                font-size: 11pt;
+                padding: 15mm 20mm !important; /* 改由 body 內部留白，確保版面美觀 */
+            }
+            /* 列印時隱藏一般網頁 UI 與輸入表單 */
+            nav, header, main, footer, .no-print, #validationError {
+                display: none !important;
+            }
+            /* 僅顯示專用 A4 報表區塊 */
+            #printReport {
+                display: block !important;
+            }
         }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
 
-    <!-- Game Style Navigation Bar -->
-    <nav class="bg-slate-950 border-b-4 border-indigo-600 shadow-md no-print sticky top-0 z-50">
+    <!-- Game Menu Top Navbar -->
+    <nav class="bg-slate-950 border-b-4 border-indigo-600 shadow-lg sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
+                <!-- Game Title Logo -->
                 <div class="flex items-center gap-3">
-                    <a href="index.html" class="flex items-center gap-2.5 group">
-                        <div class="w-9 h-9 rounded-lg bg-indigo-600 border-2 border-yellow-400 flex items-center justify-center text-yellow-300 shadow-[0_3px_0_#312e81]">
-                            <i class="fa-solid fa-gamepad text-base"></i>
+                    <a href="index.html" class="flex items-center gap-3 group">
+                        <div class="w-10 h-10 bg-indigo-600 border-2 border-yellow-400 rounded-lg flex items-center justify-center text-yellow-300 shadow-[0_4px_0_#312e81] group-hover:scale-105 transition">
+                            <i class="fa-solid fa-gamepad text-xl"></i>
                         </div>
-                        <span class="text-yellow-400 font-extrabold text-sm tracking-wider">INSURE GAME</span>
+                        <div>
+                            <div class="font-pixel-title text-yellow-400 text-xs tracking-wider flex items-center gap-1.5">
+                                <span>INSURE GAME</span>
+                                <span class="bg-indigo-800 text-indigo-200 text-[9px] px-1.5 py-0.2 rounded border border-indigo-500">v1.0</span>
+                            </div>
+                            <div class="text-white font-extrabold text-base tracking-wide">
+                                保險財務試算系統
+                            </div>
+                        </div>
                     </a>
                 </div>
-                <div class="flex items-center space-x-2 sm:space-x-4">
-                    <a href="index.html" class="text-xs sm:text-sm text-slate-300 hover:bg-slate-800 hover:text-yellow-400 px-3.5 py-2 rounded font-extrabold transition flex items-center gap-1.5 border border-slate-800">
+
+                <!-- Navigation Tabs -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <a href="index.html" class="text-xs sm:text-sm bg-slate-900 text-indigo-300 hover:bg-indigo-600 hover:text-white px-3.5 py-2 rounded font-extrabold border-2 border-indigo-500 shadow-[0_3px_0_#1e1b4b] transition flex items-center gap-1.5">
                         <i class="fa-solid fa-house"></i> 首頁
                     </a>
-                    <a href="lump-sum.html" class="text-xs sm:text-sm bg-emerald-600 text-white px-3.5 py-2 rounded font-extrabold transition flex items-center gap-1.5 border border-emerald-400 shadow-[0_3px_0_#064e3b]">
-                        <i class="fa-solid fa-calculator"></i> 躉繳現金流試算
+                    <a href="lump-sum.html" class="text-xs sm:text-sm bg-yellow-500 text-slate-950 px-3.5 py-2 rounded font-extrabold border-2 border-yellow-300 shadow-[0_3px_0_#b45309] hover:bg-yellow-400 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-calculator"></i> 躉繳試算
                     </a>
                 </div>
             </div>
@@ -364,6 +386,171 @@
         </footer>
 
     </main>
+
+    <!-- 專用 A4 列印 / PDF 儲存簡潔報表容器 (螢幕預設隱藏，僅列印時顯示) -->
+    <div id="printReport" class="hidden font-sans text-slate-900 leading-relaxed max-w-4xl mx-auto p-4">
+        <!-- 報表頁眉 -->
+        <div class="border-b-2 border-emerald-600 pb-3 mb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight" id="printReportFundTitle">基金名稱：-</h1>
+            </div>
+            <div class="text-right text-xs text-slate-600 space-y-1">
+                <p id="printReportDate" class="font-semibold">試算日期：-</p>
+            </div>
+        </div>
+
+        <!-- 區塊一：進場資訊 -->
+        <div class="mb-6">
+            <h2 class="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1.5 rounded border-l-4 border-emerald-600 mb-2 uppercase tracking-wider">
+                一、進場資訊
+            </h2>
+            <table class="w-full text-xs border-collapse border border-slate-300">
+                <tbody>
+                    <tr class="border-b border-slate-200">
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 w-1/4 font-semibold text-slate-700">投入總金額 (TWD)</th>
+                        <td class="p-2.5 font-bold border-r border-slate-300 text-slate-900 text-xs" id="printInvestTWD">NT$ 0</td>
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 w-1/4 font-semibold text-slate-700" id="printFeeLabel">手續費金額 (%)</th>
+                        <td class="p-2.5 font-bold text-slate-900 text-xs" id="printFeeTWD">NT$ 0</td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 font-semibold text-slate-700">美金匯率 (TWD)</th>
+                        <td class="p-2.5 font-bold text-slate-900 text-xs border-r border-slate-300" id="printExRate">-</td>
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 font-semibold text-slate-700">基金淨值 (USD)</th>
+                        <td class="p-2.5 font-bold text-slate-900 text-xs" id="printNavUSD">-</td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 font-semibold text-slate-700">實際進場金額</th>
+                        <td class="p-2.5 font-bold text-slate-900 text-xs border-r border-slate-300" id="printActualTWD">NT$ 0</td>
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 font-semibold text-slate-700">購入總單位數</th>
+                        <td class="p-2.5 font-bold text-slate-900 text-xs" id="printUnits">0 單位</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 font-semibold text-slate-700">管理費說明</th>
+                        <td colspan="3" class="p-2.5 font-bold text-slate-900 text-xs" id="printMgmtFee">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 區塊二：首年每月配息與年化撥回率試算 (美金匯率敏感度比較) -->
+        <div class="mb-6">
+            <h2 class="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1.5 rounded border-l-4 border-emerald-600 mb-2 uppercase tracking-wider">
+                二、首年每月配息與年化撥回率試算 (美金匯率敏感度比較)
+            </h2>
+            <table class="w-full text-xs border-collapse border border-slate-300">
+                <thead>
+                    <tr class="bg-slate-100 border-b border-slate-300 font-semibold text-slate-700">
+                        <th class="p-2 border-r border-slate-300 text-left w-1/4">試算情境</th>
+                        <th class="p-2 border-r border-slate-300 text-center w-1/6">每單位配息 (USD)</th>
+                        <th class="p-2 border-r border-slate-300 text-left w-1/3 pl-3">每月台幣配息</th>
+                        <th class="p-2 text-center w-1/4">年化撥回率</th>
+                    </tr>
+                </thead>
+
+                <!-- 情境 A -->
+                <tbody class="border-b-2 border-slate-300">
+                    <tr class="border-b border-slate-200">
+                        <td rowspan="3" class="p-2.5 text-left font-bold border-r border-slate-300 text-slate-900 bg-slate-50 align-middle">
+                            情境 A：常用/預期配息率
+                        </td>
+                        <td rowspan="3" class="p-2.5 text-center font-bold border-r border-slate-300 text-slate-900 align-middle" id="printScen1Rate">
+                            0.067 USD
+                        </td>
+                        <!-- 低匯率 -->
+                        <td class="p-2 border-r border-slate-300 text-slate-900">
+                            <span class="text-slate-500 font-medium">低匯率 (<span id="printLowRateText1">30</span>)</span><br>
+                            <span id="printScen1LowTWD" class="font-bold text-slate-900">NT$ 0</span>
+                        </td>
+                        <td class="p-2 text-center font-bold text-slate-900 align-middle" id="printScen1LowAnnual">
+                            0 %
+                        </td>
+                    </tr>
+                    <!-- 當前匯率 (綠色色系標示) -->
+                    <tr class="border-b border-slate-200 bg-emerald-50/70">
+                        <td class="p-2 border-r border-slate-300">
+                            <span class="text-emerald-800 font-bold">當前匯率 (<span id="printMidRateText1">32.5</span>)</span><br>
+                            <span id="printScen1MidTWD" class="font-black text-emerald-800 text-sm">NT$ 0</span>
+                        </td>
+                        <td class="p-2 text-center font-black text-emerald-800 text-sm align-middle" id="printScen1MidAnnual">
+                            0 %
+                        </td>
+                    </tr>
+                    <!-- 高匯率 -->
+                    <tr>
+                        <td class="p-2 border-r border-slate-300 text-slate-900">
+                            <span class="text-slate-500 font-medium">高匯率 (<span id="printHighRateText1">33.5</span>)</span><br>
+                            <span id="printScen1HighTWD" class="font-bold text-slate-900">NT$ 0</span>
+                        </td>
+                        <td class="p-2 text-center font-bold text-slate-900 align-middle" id="printScen1HighAnnual">
+                            0 %
+                        </td>
+                    </tr>
+                </tbody>
+
+                <!-- 情境 B -->
+                <tbody>
+                    <tr class="border-b border-slate-200">
+                        <td rowspan="3" class="p-2.5 text-left font-bold border-r border-slate-300 text-slate-900 bg-slate-50 align-middle">
+                            情境 B：保守/極端配息率
+                        </td>
+                        <td rowspan="3" class="p-2.5 text-center font-bold border-r border-slate-300 text-slate-900 align-middle" id="printScen2Rate">
+                            0.055 USD
+                        </td>
+                        <!-- 低匯率 -->
+                        <td class="p-2 border-r border-slate-300 text-slate-900">
+                            <span class="text-slate-500 font-medium">低匯率 (<span id="printLowRateText2">30</span>)</span><br>
+                            <span id="printScen2LowTWD" class="font-bold text-slate-900">NT$ 0</span>
+                        </td>
+                        <td class="p-2 text-center font-bold text-slate-900 align-middle" id="printScen2LowAnnual">
+                            0 %
+                        </td>
+                    </tr>
+                    <!-- 當前匯率 (同情境 A 綠色色系標示) -->
+                    <tr class="border-b border-slate-200 bg-emerald-50/70">
+                        <td class="p-2 border-r border-slate-300">
+                            <span class="text-emerald-800 font-bold">當前匯率 (<span id="printMidRateText2">32.5</span>)</span><br>
+                            <span id="printScen2MidTWD" class="font-black text-emerald-800 text-sm">NT$ 0</span>
+                        </td>
+                        <td class="p-2 text-center font-black text-emerald-800 text-sm align-middle" id="printScen2MidAnnual">
+                            0 %
+                        </td>
+                    </tr>
+                    <!-- 高匯率 -->
+                    <tr>
+                        <td class="p-2 border-r border-slate-300 text-slate-900">
+                            <span class="text-slate-500 font-medium">高匯率 (<span id="printHighRateText2">33.5</span>)</span><br>
+                            <span id="printScen2HighTWD" class="font-bold text-slate-900">NT$ 0</span>
+                        </td>
+                        <td class="p-2 text-center font-bold text-slate-900 align-middle" id="printScen2HighAnnual">
+                            0 %
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 區塊三：一年後配息試算 (若適用) -->
+        <div id="printAfterYearSection" class="mb-8">
+            <h2 class="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1.5 rounded border-l-4 border-indigo-600 mb-2 uppercase tracking-wider">
+                三、一年後（扣除管理費單位數）每月配息試算
+            </h2>
+            <table class="w-full text-xs border-collapse border border-slate-300">
+                <tbody>
+                    <tr>
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 w-1/3 font-semibold text-slate-700">一年後剩餘單位數</th>
+                        <td class="p-2.5 font-bold border-r border-slate-300 text-slate-900 text-xs" id="printAfterUnits">0 單位</td>
+                        <th class="bg-slate-50 p-2.5 text-left border-r border-slate-300 w-1/4 font-semibold text-slate-700">一年後每月台幣配息</th>
+                        <td class="p-2.5 font-bold text-slate-900 text-xs" id="printAfterMonthly">NT$ 0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 頁尾與聲明 -->
+        <div class="border-t border-slate-300 pt-4 text-[10px] text-slate-500 space-y-1 mt-12">
+            <p class="font-semibold text-slate-600">* 免責聲明：本試算結果僅供投資與財務規劃參考，實際配息與收益依基金發行機構、實際匯率與市場波動為準。</p>
+        </div>
+    </div>
 
     <!-- 載入外鏈 JavaScript -->
     <script src="script.js"></script>
