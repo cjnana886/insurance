@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資產傳承與稅務分析 - 保險財務試算工具</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Silkscreen + Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .font-pixel-title { font-family: 'Silkscreen', 'Noto Sans TC', cursive; }
+
+        /* Portal Switch Cards (Matches Reference Design) */
+        .portal-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1.75rem;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .portal-card:hover {
+            transform: translateY(-4px);
+            border-color: #6366f1;
+            box-shadow: 0 20px 30px -10px rgba(99, 102, 241, 0.18);
+        }
+        .portal-card.active {
+            border-color: #4f46e5;
+            background: linear-gradient(145deg, #ffffff 0%, #f5f3ff 100%);
+            box-shadow: 0 16px 32px -8px rgba(79, 70, 229, 0.22);
+        }
+        .portal-card.active::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, #4f46e5, #818cf8);
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            body {
+                background: white !important;
+                color: #0f172a !important;
+                font-size: 11pt;
+                padding: 15mm 20mm !important;
+            }
+            nav, header, .no-print, #portalCardsContainer, .tab-buttons {
+                display: none !important;
+            }
+            .print-block {
+                display: block !important;
+            }
+            .calc-panel {
+                display: block !important;
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Game Menu Top Navbar -->
+    <nav class="bg-slate-950 border-b-4 border-indigo-600 shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Game Title Logo -->
+                <div class="flex items-center gap-3">
+                    <a href="index.html" class="flex items-center gap-3 group">
+                        <div class="w-10 h-10 bg-indigo-600 border-2 border-yellow-400 rounded-lg flex items-center justify-center text-yellow-300 shadow-[0_4px_0_#312e81] group-hover:scale-105 transition">
+                            <i class="fa-solid fa-gamepad text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-pixel-title text-yellow-400 text-xs tracking-wider flex items-center gap-1.5">
+                                <span>INSURE GAME</span>
+                                <span class="bg-indigo-800 text-indigo-200 text-[9px] px-1.5 py-0.2 rounded border border-indigo-500">v1.0</span>
+                            </div>
+                            <div class="text-white font-extrabold text-base tracking-wide">
+                                保險財務試算系統
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <a href="index.html" class="text-xs sm:text-sm bg-slate-900 text-indigo-300 hover:bg-indigo-600 hover:text-white px-3.5 py-2 rounded font-extrabold border-2 border-indigo-500 shadow-[0_3px_0_#1e1b4b] transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-house"></i> 首頁
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="p-3 sm:p-6 max-w-5xl mx-auto space-y-6 flex-1 w-full">
+
+        <!-- Top Header Banner -->
+        <header class="bg-gradient-to-r from-indigo-700 via-indigo-800 to-purple-800 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-500/50 border border-indigo-300/40 rounded-xl flex items-center justify-center text-yellow-300 shadow">
+                        <i class="fa-solid fa-shield-halved text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">資產傳承與稅務分析</h1>
+                        <p class="text-indigo-200 text-xs sm:text-sm mt-0.5 font-medium">適用最新 114 年標準｜遺產稅與贈與稅累進差額精確試算</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 no-print self-end md:self-auto">
+                <button id="btnPrintPage" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-1.5 border border-indigo-400">
+                    <i class="fa-solid fa-print"></i> 列印 / 儲存 PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- 2 Portal Selection Cards (Exact Layout as Requested in User Screenshot) -->
+        <section id="portalCardsContainer" class="no-print">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                <!-- 遺產稅試算 Card -->
+                <div id="cardEstateSelect" class="portal-card active group" onclick="switchTaxTab('estate')">
+                    <div class="flex justify-between items-start mb-3">
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight group-hover:text-indigo-700 transition">
+                            遺產稅試算
+                        </h2>
+                        <span id="badgeEstate" class="bg-indigo-100 text-indigo-700 text-xs font-black px-2.5 py-1 rounded-full border border-indigo-200">
+                            當前選擇
+                        </span>
+                    </div>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-6 font-medium">
+                        依照最新免稅額與扣除額，<br class="hidden sm:inline">預估遺產稅負擔。
+                    </p>
+                    <div class="flex items-center text-indigo-700 font-extrabold text-sm sm:text-base group-hover:text-indigo-900 group-hover:translate-x-1 transition duration-200">
+                        <span>啟動工具</span>
+                        <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                    </div>
+                </div>
+
+                <!-- 贈與稅試算 Card -->
+                <div id="cardGiftSelect" class="portal-card group" onclick="switchTaxTab('gift')">
+                    <div class="flex justify-between items-start mb-3">
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight group-hover:text-indigo-700 transition">
+                            贈與稅試算
+                        </h2>
+                        <span id="badgeGift" class="hidden bg-indigo-100 text-indigo-700 text-xs font-black px-2.5 py-1 rounded-full border border-indigo-200">
+                            當前選擇
+                        </span>
+                    </div>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-6 font-medium">
+                        輸入贈與資產與扣除項目，<br class="hidden sm:inline">評估贈與稅金額。
+                    </p>
+                    <div class="flex items-center text-indigo-700 font-extrabold text-sm sm:text-base group-hover:text-indigo-900 group-hover:translate-x-1 transition duration-200">
+                        <span>啟動工具</span>
+                        <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: 遺產稅試算 (Estate Tax Section) -->
+        <!-- ========================================== -->
+        <div id="sectionEstate" class="space-y-6">
+
+            <!-- Estate Tax Main Card -->
+            <div class="bg-white p-5 sm:p-7 rounded-2xl shadow-md border border-slate-200 space-y-6 calc-panel">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center pb-3 border-b border-slate-200 gap-2">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-indigo-600"></i>
+                            <span>遺產稅試算</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">輸入遺產金額、扣除與免稅項目，即可試算課稅遺產淨額與應納稅額</p>
+                    </div>
+                    <div class="flex items-center gap-2 no-print">
+                        <button type="button" onclick="loadEstateExample()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold border border-slate-300 transition flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles text-indigo-600"></i> 帶入範例
+                        </button>
+                        <button type="button" onclick="resetEstateForm()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold border border-slate-300 transition flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i> 清空
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input Form Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    
+                    <!-- 1. 遺產總額 -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            遺產總額 (元) <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="estateTotal" value="" placeholder="請輸入遺產總額" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-extrabold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">含動產、不動產、股票、存款及其他資產</p>
+                    </div>
+
+                    <!-- 2. 不計入遺產總額 -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            不計入遺產總額 (元)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="estateExcluded" value="0" placeholder="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-bold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">如日常生活必需器具、職業工具、指定受益人之保險金等</p>
+                    </div>
+
+                    <!-- 3. 扣除項目總額 (With Drawer/Helper) -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                                扣除項目總額 (元)
+                            </label>
+                            <button type="button" onclick="toggleEstateDeductionHelper()" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 no-print">
+                                <i class="fa-solid fa-calculator"></i> 扣除額速算小幫手
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <input type="text" id="estateDeductions" value="0" placeholder="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-bold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">醫療、喪葬費(138萬)、配偶(553萬)、子女卑親屬(每人56萬)等</p>
+                    </div>
+
+                    <!-- 4. 抵扣稅額及利息 -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            抵扣稅額及利息 (元)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="estateTaxCredits" value="0" placeholder="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-bold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">在國外已納稅額或其他依法扣抵項目</p>
+                    </div>
+
+                    <!-- 5. 免稅額 (預設 13,330,000) -->
+                    <div class="space-y-1 md:col-span-2">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            免稅額 (元)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="estateExemption" value="13,330,000" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-extrabold text-base focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-700 font-semibold">* 依財政部公告最新適用標準，預設為新台幣 13,330,000 元</p>
+                    </div>
+                </div>
+
+                <!-- 扣除額小幫手展開區 (Helper Drawer) -->
+                <div id="estateHelperDrawer" class="hidden bg-indigo-50/70 border-2 border-indigo-200 rounded-xl p-4 sm:p-5 space-y-4 no-print">
+                    <div class="flex justify-between items-center pb-2 border-b border-indigo-200">
+                        <span class="text-sm font-black text-indigo-950 flex items-center gap-1.5">
+                            <i class="fa-solid fa-users text-indigo-600"></i> 法定扣除額試算助手 (點選即自動帶入)
+                        </span>
+                        <button type="button" onclick="toggleEstateDeductionHelper()" class="text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                        <label class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-indigo-100 cursor-pointer hover:bg-indigo-50">
+                            <input type="checkbox" id="chkSpouse" onchange="calcHelperDeductions()" class="rounded text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <span class="font-bold text-slate-800">配偶扣除額</span>
+                                <span class="text-indigo-600 font-bold block">553 萬元</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-indigo-100 cursor-pointer hover:bg-indigo-50">
+                            <input type="checkbox" id="chkFuneral" onchange="calcHelperDeductions()" class="rounded text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <span class="font-bold text-slate-800">喪葬費扣除額</span>
+                                <span class="text-indigo-600 font-bold block">138 萬元</span>
+                            </div>
+                        </label>
+                        <div class="bg-white p-2.5 rounded-lg border border-indigo-100 space-y-1">
+                            <span class="font-bold text-slate-800">直系血親卑親屬</span>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="numKids" value="0" min="0" onchange="calcHelperDeductions()" class="w-16 border border-slate-300 rounded px-1.5 py-0.5 text-center font-bold">
+                                <span class="text-slate-500">位 (每人56萬)</span>
+                            </div>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-lg border border-indigo-100 space-y-1">
+                            <span class="font-bold text-slate-800">父母扣除額</span>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="numParents" value="0" min="0" max="2" onchange="calcHelperDeductions()" class="w-16 border border-slate-300 rounded px-1.5 py-0.5 text-center font-bold">
+                                <span class="text-slate-500">位 (每人138萬)</span>
+                            </div>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-lg border border-indigo-100 space-y-1">
+                            <span class="font-bold text-slate-800">重度以上身心障礙</span>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="numDisability" value="0" min="0" onchange="calcHelperDeductions()" class="w-16 border border-slate-300 rounded px-1.5 py-0.5 text-center font-bold">
+                                <span class="text-slate-500">位 (每人693萬)</span>
+                            </div>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-lg border border-indigo-100 space-y-1">
+                            <span class="font-bold text-slate-800">受扶養之兄弟姊妹祖父母</span>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="numSiblings" value="0" min="0" onchange="calcHelperDeductions()" class="w-16 border border-slate-300 rounded px-1.5 py-0.5 text-center font-bold">
+                                <span class="text-slate-500">位 (每人56萬)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t border-indigo-200">
+                        <span class="text-xs text-indigo-900 font-bold">小幫手合計扣除額：<span id="helperDeductionTotal" class="text-sm font-black text-indigo-700">0</span> 元</span>
+                        <button type="button" onclick="applyHelperDeductions()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-bold text-xs shadow transition">
+                            套用至表單
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Calculate Action Button -->
+                <div class="pt-2 no-print">
+                    <button type="button" onclick="calculateEstateTax()" class="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base">
+                        <i class="fa-solid fa-calculator"></i>
+                        <span>開始計算遺產稅額</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estate Tax Results Panel -->
+            <div id="estateResultBox" class="bg-white p-5 sm:p-7 rounded-2xl shadow-md border border-slate-200 space-y-6">
+                <h3 class="text-lg font-black text-slate-900 pb-2 border-b border-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-square-poll-vertical text-indigo-600"></i>
+                    <span>遺產稅試算結果</span>
+                </h3>
+
+                <!-- Top Highlight Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 block uppercase">課稅遺產淨額 (Taxable Estate)</span>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-slate-400 font-bold text-sm">NT$</span>
+                            <span id="resEstateNet" class="text-2xl sm:text-3xl font-black text-slate-900">0</span>
+                        </div>
+                        <span class="text-[11px] text-slate-500 mt-1 block">總額扣除：不計入、扣除額與免稅額</span>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-xl border-2 border-indigo-200">
+                        <span class="text-xs font-black text-indigo-700 block uppercase">應納遺產稅額 (Total Estate Tax)</span>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-indigo-600 font-bold text-sm">NT$</span>
+                            <span id="resEstateTotalTax" class="text-2xl sm:text-3xl font-black text-red-600">0</span>
+                        </div>
+                        <span class="text-[11px] text-indigo-900 font-medium mt-1 block">扣除抵扣稅額及利息後之最終應繳稅額</span>
+                    </div>
+                </div>
+
+                <!-- Progressive Bracket Breakdown Table -->
+                <div class="space-y-2">
+                    <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-layer-group text-indigo-500"></i> 累進稅率級距分段試算明細 (114年起最新物價指數)
+                    </h4>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 font-bold">課稅級距標準</th>
+                                    <th class="p-3 font-bold text-center">稅率</th>
+                                    <th class="p-3 font-bold text-right">分段課稅金額</th>
+                                    <th class="p-3 font-bold text-right">分段應納稅額</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 font-medium">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 text-slate-800">5,621 萬元以下</td>
+                                    <td class="p-3 text-center font-bold text-indigo-600">10%</td>
+                                    <td class="p-3 text-right font-mono text-slate-700" id="resEstateTier1Base">0</td>
+                                    <td class="p-3 text-right font-mono font-bold text-slate-900" id="resEstateTier1Tax">0</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 text-slate-800">超過 5,621 萬至 1 億 1,242 萬元</td>
+                                    <td class="p-3 text-center font-bold text-indigo-600">15%</td>
+                                    <td class="p-3 text-right font-mono text-slate-700" id="resEstateTier2Base">0</td>
+                                    <td class="p-3 text-right font-mono font-bold text-slate-900" id="resEstateTier2Tax">0</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 text-slate-800">超過 1 億 1,242 萬元</td>
+                                    <td class="p-3 text-center font-bold text-indigo-600">20%</td>
+                                    <td class="p-3 text-right font-mono text-slate-700" id="resEstateTier3Base">0</td>
+                                    <td class="p-3 text-right font-mono font-bold text-slate-900" id="resEstateTier3Tax">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Info Alert -->
+                <p class="text-xs text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i>
+                    本試算結果僅供專業規劃與參考，實際應納稅額須依國稅局最終核定通知書為準。如需進行資產傳承與保單指定受益人配置，歡迎進一步洽詢專業財務顧問。
+                </p>
+            </div>
+
+            <!-- Reference Table (遺產稅基本資料摘要) -->
+            <div class="bg-white p-5 sm:p-7 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-indigo-600"></i>
+                    <span>遺產稅法定標準與扣除額摘要表</span>
+                </h3>
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-xs sm:text-sm text-left">
+                        <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">項目類別</th>
+                                <th class="p-3">項目內容</th>
+                                <th class="p-3 text-center bg-indigo-50 text-indigo-900 font-black">114 年 1 月 1 日以後適用標準</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-700 font-medium">
+                            <tr>
+                                <td class="p-3 font-bold bg-slate-50">免稅額</td>
+                                <td class="p-3">被繼承人免稅額</td>
+                                <td class="p-3 text-center font-bold text-indigo-700 bg-indigo-50/40">1,333 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold bg-slate-50" rowspan="2">不計入遺產總額</td>
+                                <td class="p-3">被繼承人日常生活必需之器具及用具</td>
+                                <td class="p-3 text-center">100 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">被繼承人職業上之工具</td>
+                                <td class="p-3 text-center">56 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold bg-slate-50" rowspan="6">各項扣除額</td>
+                                <td class="p-3">配偶扣除額</td>
+                                <td class="p-3 text-center font-bold text-indigo-700 bg-indigo-50/40">553 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">直系血親卑親屬扣除額</td>
+                                <td class="p-3 text-center">每人 56 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">父母扣除額</td>
+                                <td class="p-3 text-center">每人 138 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">重度以上身心障礙特別扣除額</td>
+                                <td class="p-3 text-center">每人 693 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">受被繼承人扶養之兄弟姊妹祖父母</td>
+                                <td class="p-3 text-center">每人 56 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">喪葬費扣除額</td>
+                                <td class="p-3 text-center font-bold text-indigo-700 bg-indigo-50/40">138 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold bg-slate-50" rowspan="3">課稅級距</td>
+                                <td class="p-3">稅率 10%</td>
+                                <td class="p-3 text-center">5,621 萬元以下</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">稅率 15%</td>
+                                <td class="p-3 text-center">超過 5,621 萬 ~ 1 億 1,242 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">稅率 20%</td>
+                                <td class="p-3 text-center">超過 1 億 1,242 萬元</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: 贈與稅試算 (Gift Tax Section) -->
+        <!-- ========================================== -->
+        <div id="sectionGift" class="hidden space-y-6">
+
+            <!-- Gift Tax Main Card -->
+            <div class="bg-white p-5 sm:p-7 rounded-2xl shadow-md border border-slate-200 space-y-6 calc-panel">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center pb-3 border-b border-slate-200 gap-2">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-hand-holding-dollar text-indigo-600"></i>
+                            <span>贈與稅試算</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">輸入年度贈與金額與扣除項目，系統將依最新累進稅率自動計算應納贈與稅</p>
+                    </div>
+                    <div class="flex items-center gap-2 no-print">
+                        <button type="button" onclick="loadGiftExample()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold border border-slate-300 transition flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles text-indigo-600"></i> 帶入範例
+                        </button>
+                        <button type="button" onclick="resetGiftForm()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold border border-slate-300 transition flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i> 清空
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input Form Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <!-- 1. 本次贈與總額 -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            本次贈與總額 (元) <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="giftCurrent" value="" placeholder="請輸入本次贈與總額" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-extrabold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">本次贈與他人之各類資產總價值</p>
+                    </div>
+
+                    <!-- 2. 本年度先前贈與總額 -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            本年度先前贈與總額 (元)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="giftPrevious" value="0" placeholder="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-bold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">同一贈與人在本年度此前已完成之贈與總計</p>
+                    </div>
+
+                    <!-- 3. 不計入贈與總額 -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            不計入贈與總額 (元)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="giftNonIncluded" value="0" placeholder="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-bold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">配偶相互贈與、父母於子女婚嫁時之贈與(各100萬內)等</p>
+                    </div>
+
+                    <!-- 4. 扣除額 -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            扣除額 (元)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="giftDeductions" value="0" placeholder="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-bold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">贈與附有負擔由受贈人負擔之部分、相關規費稅捐等</p>
+                    </div>
+
+                    <!-- 5. 免稅額 (年度 2,440,000) -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            年度免稅額 (元)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="giftExemption" value="2,440,000" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-extrabold text-base focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-700 font-semibold">* 每一贈與人每年法定免稅額度：新台幣 2,440,000 元</p>
+                    </div>
+
+                    <!-- 6. 可扣抵稅額 -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                            本年度先前已納及可扣抵稅額 (元)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="giftTaxCredit" value="0" placeholder="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-9 text-slate-900 font-bold text-base focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
+                            <span class="absolute left-3 top-3.5 text-slate-400 font-bold">$</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">本年度內此前各次贈與已繳納之贈與稅額</p>
+                    </div>
+                </div>
+
+                <!-- Calculate Action Button -->
+                <div class="pt-2 no-print">
+                    <button type="button" onclick="calculateGiftTax()" class="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base">
+                        <i class="fa-solid fa-calculator"></i>
+                        <span>開始計算贈與稅額</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Gift Tax Results Panel -->
+            <div id="giftResultBox" class="bg-white p-5 sm:p-7 rounded-2xl shadow-md border border-slate-200 space-y-6">
+                <h3 class="text-lg font-black text-slate-900 pb-2 border-b border-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-square-poll-vertical text-indigo-600"></i>
+                    <span>贈與稅試算結果</span>
+                </h3>
+
+                <!-- Top Highlight Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 block uppercase">本年度課稅贈與淨額</span>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-slate-400 font-bold text-sm">NT$</span>
+                            <span id="resGiftTaxableNet" class="text-2xl sm:text-3xl font-black text-slate-900">0</span>
+                        </div>
+                        <span class="text-[11px] text-slate-500 mt-1 block">本年度贈與總額：NT$ <span id="resGiftAnnualTotal" class="font-bold text-slate-700">0</span></span>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-xl border-2 border-indigo-200">
+                        <span class="text-xs font-black text-indigo-700 block uppercase">本次應納贈與稅額 (Final Gift Tax)</span>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-indigo-600 font-bold text-sm">NT$</span>
+                            <span id="resGiftFinalTax" class="text-2xl sm:text-3xl font-black text-red-600">0</span>
+                        </div>
+                        <span class="text-[11px] text-indigo-900 font-medium mt-1 block">
+                            適用最高稅率：<span id="resGiftRate" class="font-bold text-indigo-700">0%</span> ｜ 累進差額：NT$ <span id="resGiftDiff" class="font-bold text-indigo-700">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Progressive Bracket Breakdown Table -->
+                <div class="space-y-2">
+                    <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-layer-group text-indigo-500"></i> 稅率級距分配明細 (114年起最新物價指數)
+                    </h4>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 font-bold">級距範圍</th>
+                                    <th class="p-3 font-bold text-center">稅率</th>
+                                    <th class="p-3 font-bold text-right">分段課稅金額</th>
+                                    <th class="p-3 font-bold text-right">分段稅額</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 font-medium">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 text-slate-800">2,811 萬元以下</td>
+                                    <td class="p-3 text-center font-bold text-indigo-600">10%</td>
+                                    <td class="p-3 text-right font-mono text-slate-700" id="resGiftTier1Base">0</td>
+                                    <td class="p-3 text-right font-mono font-bold text-slate-900" id="resGiftTier1Tax">0</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 text-slate-800">超過 2,811 萬至 5,621 萬元</td>
+                                    <td class="p-3 text-center font-bold text-indigo-600">15%</td>
+                                    <td class="p-3 text-right font-mono text-slate-700" id="resGiftTier2Base">0</td>
+                                    <td class="p-3 text-right font-mono font-bold text-slate-900" id="resGiftTier2Tax">0</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 text-slate-800">超過 5,621 萬元</td>
+                                    <td class="p-3 text-center font-bold text-indigo-600">20%</td>
+                                    <td class="p-3 text-right font-mono text-slate-700" id="resGiftTier3Base">0</td>
+                                    <td class="p-3 text-right font-mono font-bold text-slate-900" id="resGiftTier3Tax">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Info Alert -->
+                <p class="text-xs text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i>
+                    計算公式：課稅贈與淨額 ＝ (本年度贈與總額 － 不計入總額 － 扣除額) － 免稅額。應納稅額 ＝ (課稅贈與淨額 × 稅率 － 累進差額) － 本年度已納及可抵扣稅額。
+                </p>
+            </div>
+
+            <!-- Reference Table (贈與稅基本資料摘要) -->
+            <div class="bg-white p-5 sm:p-7 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-indigo-600"></i>
+                    <span>贈與稅法定標準與級距對照表</span>
+                </h3>
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-xs sm:text-sm text-left">
+                        <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">項目</th>
+                                <th class="p-3">規定內容</th>
+                                <th class="p-3 text-center bg-indigo-50 text-indigo-900 font-black">適用標準 / 累進差額</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-700 font-medium">
+                            <tr>
+                                <td class="p-3 font-bold bg-slate-50">年度免稅額</td>
+                                <td class="p-3">每一贈與人自每年 1 月 1 日至 12 月 31 日止</td>
+                                <td class="p-3 text-center font-bold text-indigo-700 bg-indigo-50/40">244 萬元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold bg-slate-50">配偶相互贈與</td>
+                                <td class="p-3">夫妻間財產贈與完全免稅，不計入贈與總額</td>
+                                <td class="p-3 text-center text-emerald-600 font-bold">免稅 (不限金額)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold bg-slate-50">婚嫁贈與</td>
+                                <td class="p-3">父母於子女結婚前後贈與財物</td>
+                                <td class="p-3 text-center">各 100 萬元限額內不計入</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold bg-slate-50" rowspan="3">課稅級距與差額</td>
+                                <td class="p-3">第 1 級：淨額 2,811 萬元以下 (稅率 10%)</td>
+                                <td class="p-3 text-center">累進差額 0 元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">第 2 級：超過 2,811 萬 ~ 5,621 萬元 (稅率 15%)</td>
+                                <td class="p-3 text-center font-bold text-indigo-700 bg-indigo-50/40">累進差額 1,405,500 元</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">第 3 級：超過 5,621 萬元 (稅率 20%)</td>
+                                <td class="p-3 text-center font-bold text-indigo-700 bg-indigo-50/40">累進差額 4,216,000 元</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t-4 border-indigo-600 py-6 text-center text-xs text-slate-400 no-print">
+        <div class="max-w-6xl mx-auto px-4 space-y-1">
+            <p class="text-indigo-400 font-bold">© 保險財務試算系統 ALL RIGHTS RESERVED.</p>
+            <p class="text-slate-500">資產傳承與稅務試算工具 ｜ 僅供投資試算與財務規劃參考，實際稅額以主管機關核定為準</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Number Utilities
+        function formatNumber(num) {
+            if (isNaN(num)) return '0';
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function parseNumber(str) {
+            return parseFloat(String(str).replace(/,/g, '')) || 0;
+        }
+
+        // Auto thousand separator binding
+        function bindNumberFormatting(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.addEventListener('blur', (e) => {
+                const val = parseNumber(e.target.value);
+                e.target.value = e.target.value.trim() === '' ? '' : (val === 0 ? '0' : formatNumber(val));
+            });
+            input.addEventListener('focus', (e) => {
+                const val = parseNumber(e.target.value);
+                e.target.value = val === 0 ? '' : val;
+            });
+        }
+
+        // Tab Switching
+        function switchTaxTab(tab) {
+            const sectionEstate = document.getElementById('sectionEstate');
+            const sectionGift = document.getElementById('sectionGift');
+            const cardEstate = document.getElementById('cardEstateSelect');
+            const cardGift = document.getElementById('cardGiftSelect');
+            const badgeEstate = document.getElementById('badgeEstate');
+            const badgeGift = document.getElementById('badgeGift');
+
+            if (tab === 'estate') {
+                sectionEstate.classList.remove('hidden');
+                sectionGift.classList.add('hidden');
+                cardEstate.classList.add('active');
+                cardGift.classList.remove('active');
+                badgeEstate.classList.remove('hidden');
+                badgeGift.classList.add('hidden');
+                window.location.hash = 'estate';
+            } else {
+                sectionEstate.classList.add('hidden');
+                sectionGift.classList.remove('hidden');
+                cardEstate.classList.remove('active');
+                cardGift.classList.add('active');
+                badgeEstate.classList.add('hidden');
+                badgeGift.classList.remove('hidden');
+                window.location.hash = 'gift';
+            }
+        }
+
+        // ==========================================
+        // 遺產稅計算邏輯 (Estate Tax Calculation)
+        // ==========================================
+        function calculateEstateTax() {
+            const total = parseNumber(document.getElementById('estateTotal').value);
+            const excluded = parseNumber(document.getElementById('estateExcluded').value);
+            const deductions = parseNumber(document.getElementById('estateDeductions').value);
+            const taxCredits = parseNumber(document.getElementById('estateTaxCredits').value);
+            const exemption = parseNumber(document.getElementById('estateExemption').value) || 13330000;
+
+            const taxableNet = Math.max(0, total - excluded - deductions - exemption);
+
+            // 114年起調整之最新級距標準
+            const tier1Limit = 56210000;
+            const tier2Limit = 112420000;
+
+            let tier1Base = 0;
+            let tier2Base = 0;
+            let tier3Base = 0;
+
+            if (taxableNet <= tier1Limit) {
+                tier1Base = taxableNet;
+            } else if (taxableNet <= tier2Limit) {
+                tier1Base = tier1Limit;
+                tier2Base = taxableNet - tier1Limit;
+            } else {
+                tier1Base = tier1Limit;
+                tier2Base = tier2Limit - tier1Limit;
+                tier3Base = taxableNet - tier2Limit;
+            }
+
+            const tier1Tax = tier1Base * 0.10;
+            const tier2Tax = tier2Base * 0.15;
+            const tier3Tax = tier3Base * 0.20;
+
+            const totalTax = Math.max(0, tier1Tax + tier2Tax + tier3Tax - taxCredits);
+
+            // Update UI
+            document.getElementById('resEstateNet').textContent = formatNumber(taxableNet);
+            document.getElementById('resEstateTotalTax').textContent = formatNumber(totalTax);
+
+            document.getElementById('resEstateTier1Base').textContent = formatNumber(tier1Base);
+            document.getElementById('resEstateTier1Tax').textContent = formatNumber(tier1Tax);
+            document.getElementById('resEstateTier2Base').textContent = formatNumber(tier2Base);
+            document.getElementById('resEstateTier2Tax').textContent = formatNumber(tier2Tax);
+            document.getElementById('resEstateTier3Base').textContent = formatNumber(tier3Base);
+            document.getElementById('resEstateTier3Tax').textContent = formatNumber(tier3Tax);
+        }
+
+        // Helper Drawer logic
+        function toggleEstateDeductionHelper() {
+            const drawer = document.getElementById('estateHelperDrawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function calcHelperDeductions() {
+            let total = 0;
+            if (document.getElementById('chkSpouse').checked) total += 5530000;
+            if (document.getElementById('chkFuneral').checked) total += 1380000;
+            
+            const kids = parseInt(document.getElementById('numKids').value) || 0;
+            total += kids * 560000;
+
+            const parents = parseInt(document.getElementById('numParents').value) || 0;
+            total += parents * 1380000;
+
+            const disability = parseInt(document.getElementById('numDisability').value) || 0;
+            total += disability * 6930000;
+
+            const siblings = parseInt(document.getElementById('numSiblings').value) || 0;
+            total += siblings * 560000;
+
+            document.getElementById('helperDeductionTotal').textContent = formatNumber(total);
+            return total;
+        }
+
+        function applyHelperDeductions() {
+            const amount = calcHelperDeductions();
+            document.getElementById('estateDeductions').value = formatNumber(amount);
+            toggleEstateDeductionHelper();
+        }
+
+        function loadEstateExample() {
+            document.getElementById('estateTotal').value = formatNumber(65000000);
+            document.getElementById('estateExcluded').value = formatNumber(0);
+            document.getElementById('estateTaxCredits').value = formatNumber(0);
+            document.getElementById('estateExemption').value = formatNumber(13330000);
+
+            // 1. 同步勾選並設定法定扣除額助手項目：配偶(553萬) + 喪葬費(138萬) + 卑親屬2位(112萬)
+            document.getElementById('chkSpouse').checked = true;
+            document.getElementById('chkFuneral').checked = true;
+            document.getElementById('numKids').value = 2;
+            document.getElementById('numParents').value = 0;
+            document.getElementById('numDisability').value = 0;
+            document.getElementById('numSiblings').value = 0;
+
+            // 2. 透過小幫手算總額 (8,030,000) 並同步帶入扣除項目總額欄位
+            const helperTotal = calcHelperDeductions();
+            document.getElementById('estateDeductions').value = formatNumber(helperTotal);
+        }
+
+        function resetEstateForm() {
+            document.getElementById('estateTotal').value = '';
+            document.getElementById('estateExcluded').value = '0';
+            document.getElementById('estateDeductions').value = '0';
+            document.getElementById('estateTaxCredits').value = '0';
+            document.getElementById('estateExemption').value = formatNumber(13330000);
+
+            // 同步重設法定扣除額助手
+            document.getElementById('chkSpouse').checked = false;
+            document.getElementById('chkFuneral').checked = false;
+            document.getElementById('numKids').value = 0;
+            document.getElementById('numParents').value = 0;
+            document.getElementById('numDisability').value = 0;
+            document.getElementById('numSiblings').value = 0;
+            calcHelperDeductions();
+
+            // 重設試算結果
+            document.getElementById('resEstateNet').textContent = '0';
+            document.getElementById('resEstateTotalTax').textContent = '0';
+            document.getElementById('resEstateTier1Base').textContent = '0';
+            document.getElementById('resEstateTier1Tax').textContent = '0';
+            document.getElementById('resEstateTier2Base').textContent = '0';
+            document.getElementById('resEstateTier2Tax').textContent = '0';
+            document.getElementById('resEstateTier3Base').textContent = '0';
+            document.getElementById('resEstateTier3Tax').textContent = '0';
+        }
+
+        // ==========================================
+        // 贈與稅計算邏輯 (Gift Tax Calculation)
+        // ==========================================
+        function calculateGiftTax() {
+            const current = parseNumber(document.getElementById('giftCurrent').value);
+            const previous = parseNumber(document.getElementById('giftPrevious').value);
+            const nonIncluded = parseNumber(document.getElementById('giftNonIncluded').value);
+            const deductions = parseNumber(document.getElementById('giftDeductions').value);
+            const exemption = parseNumber(document.getElementById('giftExemption').value) || 2440000;
+            const taxCredit = parseNumber(document.getElementById('giftTaxCredit').value);
+
+            const totalAnnualGift = current + previous;
+            const totalDeductionItems = nonIncluded + deductions;
+            const taxableNet = Math.max(0, totalAnnualGift - totalDeductionItems - exemption);
+
+            // 114年起最新累進級距標準
+            const tier1Limit = 28110000;
+            const tier2Limit = 56210000;
+            const diff2 = 1405500;
+            const diff3 = 4216000;
+
+            const tier1Base = Math.max(0, Math.min(taxableNet, tier1Limit));
+            const tier2Base = Math.max(0, Math.min(taxableNet, tier2Limit) - tier1Limit);
+            const tier3Base = Math.max(0, taxableNet - tier2Limit);
+
+            const tier1Tax = tier1Base * 0.10;
+            const tier2Tax = tier2Base * 0.15;
+            const tier3Tax = tier3Base * 0.20;
+
+            let rateText = '10%';
+            let progressiveDiff = 0;
+
+            if (taxableNet > tier2Limit) {
+                rateText = '20%';
+                progressiveDiff = diff3;
+            } else if (taxableNet > tier1Limit) {
+                rateText = '15%';
+                progressiveDiff = diff2;
+            } else if (taxableNet > 0) {
+                rateText = '10%';
+                progressiveDiff = 0;
+            } else {
+                rateText = '0%';
+                progressiveDiff = 0;
+            }
+
+            const annualTaxBeforeCredit = tier1Tax + tier2Tax + tier3Tax;
+            const finalTax = Math.max(0, annualTaxBeforeCredit - taxCredit);
+
+            // Update UI
+            document.getElementById('resGiftTaxableNet').textContent = formatNumber(taxableNet);
+            document.getElementById('resGiftAnnualTotal').textContent = formatNumber(totalAnnualGift);
+            document.getElementById('resGiftFinalTax').textContent = formatNumber(finalTax);
+            document.getElementById('resGiftRate').textContent = rateText;
+            document.getElementById('resGiftDiff').textContent = formatNumber(progressiveDiff);
+
+            document.getElementById('resGiftTier1Base').textContent = formatNumber(tier1Base);
+            document.getElementById('resGiftTier1Tax').textContent = formatNumber(tier1Tax);
+            document.getElementById('resGiftTier2Base').textContent = formatNumber(tier2Base);
+            document.getElementById('resGiftTier2Tax').textContent = formatNumber(tier2Tax);
+            document.getElementById('resGiftTier3Base').textContent = formatNumber(tier3Base);
+            document.getElementById('resGiftTier3Tax').textContent = formatNumber(tier3Tax);
+        }
+
+        function loadGiftExample() {
+            document.getElementById('giftCurrent').value = formatNumber(35000000);
+            document.getElementById('giftPrevious').value = formatNumber(0);
+            document.getElementById('giftNonIncluded').value = formatNumber(0);
+            document.getElementById('giftDeductions').value = formatNumber(0);
+            document.getElementById('giftExemption').value = formatNumber(2440000);
+            document.getElementById('giftTaxCredit').value = formatNumber(0);
+        }
+
+        function resetGiftForm() {
+            document.getElementById('giftCurrent').value = '';
+            document.getElementById('giftPrevious').value = '0';
+            document.getElementById('giftNonIncluded').value = '0';
+            document.getElementById('giftDeductions').value = '0';
+            document.getElementById('giftExemption').value = formatNumber(2440000);
+            document.getElementById('giftTaxCredit').value = '0';
+            document.getElementById('resGiftTaxableNet').textContent = '0';
+            document.getElementById('resGiftAnnualTotal').textContent = '0';
+            document.getElementById('resGiftFinalTax').textContent = '0';
+            document.getElementById('resGiftRate').textContent = '0%';
+            document.getElementById('resGiftDiff').textContent = '0';
+            document.getElementById('resGiftTier1Base').textContent = '0';
+            document.getElementById('resGiftTier1Tax').textContent = '0';
+            document.getElementById('resGiftTier2Base').textContent = '0';
+            document.getElementById('resGiftTier2Tax').textContent = '0';
+            document.getElementById('resGiftTier3Base').textContent = '0';
+            document.getElementById('resGiftTier3Tax').textContent = '0';
+        }
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            // Bind number formatters
+            [
+                'estateTotal', 'estateExcluded', 'estateDeductions', 'estateTaxCredits', 'estateExemption',
+                'giftCurrent', 'giftPrevious', 'giftNonIncluded', 'giftDeductions', 'giftExemption', 'giftTaxCredit'
+            ].forEach(bindNumberFormatting);
+
+            // Print button
+            document.getElementById('btnPrintPage').addEventListener('click', () => {
+                window.print();
+            });
+
+            // Initial hash check
+            if (window.location.hash === '#gift') {
+                switchTaxTab('gift');
+            } else {
+                switchTaxTab('estate');
+            }
+        });
+    </script>
+</body>
+</html>
