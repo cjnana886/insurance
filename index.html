@@ -92,13 +92,16 @@
                     <a href="index.html" class="text-xs sm:text-sm bg-yellow-500 text-slate-950 px-3.5 py-2 rounded font-extrabold border-2 border-yellow-300 shadow-[0_3px_0_#b45309] hover:bg-yellow-400 transition flex items-center gap-1.5">
                         <i class="fa-solid fa-house"></i> 首頁
                     </a>
+                    <a href="fund-analyzer.html" class="text-xs sm:text-sm bg-indigo-900 text-yellow-300 hover:bg-indigo-800 px-3.5 py-2 rounded font-extrabold border-2 border-indigo-500 shadow-[0_3px_0_#1e1b4b] transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-line"></i> 月配基金探勘儀
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Game Lobby Container -->
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1">
 
         <!-- Header / Lobby Banner -->
         <div class="text-center mb-10 space-y-3">
@@ -115,7 +118,7 @@
         </div>
 
         <!-- Pixel Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
             <!-- Card 1: 躉繳現金流試算表 (ACTIVE GAME ITEM CARD) -->
             <div class="pixel-card rounded-xl p-5 flex flex-col justify-between group">
@@ -281,6 +284,67 @@
                     <a href="tax-planning.html" class="pixel-btn w-full text-white text-sm py-3 px-4 rounded-lg font-extrabold flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-gamepad text-yellow-300"></i>
                         <span>開啟試算頁面 ▶</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Card 4: 投資型月配基金探勘儀 (ACTIVE GAME ITEM CARD) -->
+            <div class="pixel-card rounded-xl p-5 flex flex-col justify-between group border-amber-500/80 outline-yellow-400">
+                <div>
+                    <!-- Card Top Tag -->
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b-2 border-indigo-950">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-amber-400 text-slate-950 text-xs px-2.5 py-0.5 rounded font-black border border-amber-200">
+                                ITEM #04
+                            </span>
+                            <span class="text-xs text-amber-300 font-bold">LV.99 探勘道具</span>
+                        </div>
+                        <span class="text-amber-400 text-xs font-extrabold">
+                            ★★★★★
+                        </span>
+                    </div>
+
+                    <!-- Card Header Icon & Name -->
+                    <div class="bg-indigo-950/90 rounded-lg p-4 border-2 border-amber-600/60 text-center mb-5">
+                        <div class="w-14 h-14 mx-auto mb-2 rounded-lg bg-amber-500 border-2 border-amber-300 flex items-center justify-center text-slate-950 shadow-[0_4px_0_#78350f] group-hover:scale-105 transition">
+                            <i class="fa-solid fa-satellite-dish text-2xl"></i>
+                        </div>
+                        <h2 class="text-xl font-black text-white group-hover:text-yellow-300 transition">
+                            月配基金探勘儀
+                        </h2>
+                        <span class="inline-block mt-1 text-xs font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-600">
+                            MoneyDJ 穩健高配息分析
+                        </span>
+                    </div>
+
+                    <!-- Clear RPG Game Stats Panel -->
+                    <div class="bg-slate-950/80 rounded-lg p-3.5 border-2 border-slate-800 space-y-3 mb-6 text-sm">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-radar text-yellow-400"></i> 全區即時監測
+                            </span>
+                            <span class="text-emerald-400 font-extrabold text-base">210 檔月配</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-shield text-emerald-400"></i> 淨值穩定檢驗
+                            </span>
+                            <span class="text-cyan-300 font-bold">波動標準差評等</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-filter-circle-xmark text-rose-400"></i> 防護機制
+                            </span>
+                            <span class="text-yellow-400 font-bold">排除本金侵蝕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div>
+                    <a href="fund-analyzer.html" class="pixel-btn w-full text-white text-sm py-3 px-4 rounded-lg font-extrabold flex items-center justify-center gap-2 cursor-pointer bg-gradient-to-b from-amber-500 to-amber-600 border-amber-700 outline-amber-400">
+                        <i class="fa-solid fa-satellite-dish text-yellow-300"></i>
+                        <span>開啟探勘頁面 ▶</span>
                     </a>
                 </div>
             </div>
