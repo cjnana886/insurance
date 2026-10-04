@@ -458,4 +458,24 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     checkMgmtFeeDisabledState();
+
+    // 自動帶入 URL 參數 (例如從月配基金探勘儀一鍵跳轉)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('name') && fundName) {
+        fundName.value = urlParams.get('name');
+    }
+    if (urlParams.has('nav') && navUSD) {
+        const pNav = parseFloat(urlParams.get('nav'));
+        if (!isNaN(pNav) && pNav > 0) navUSD.value = pNav;
+    }
+    if (urlParams.has('yield') && scen1Rate && navUSD) {
+        const pYield = parseFloat(urlParams.get('yield'));
+        const pNav = parseFloat(navUSD.value) || 10;
+        if (!isNaN(pYield) && pYield > 0) {
+            scen1Rate.value = (pNav * (pYield / 100) / 12).toFixed(4);
+        }
+    }
+    if (urlParams.has('name')) {
+        calculateAll();
+    }
 });

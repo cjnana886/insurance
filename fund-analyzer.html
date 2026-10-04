@@ -18,72 +18,26 @@
         body { font-family: 'Noto Sans TC', sans-serif; }
         .font-pixel-title { font-family: 'Silkscreen', 'Noto Sans TC', cursive; }
 
-        /* Game Pixel UI Frame Styling */
-        .game-canvas {
-            background-color: #0f172a;
-            background-image: radial-gradient(#1e293b 1px, transparent 1px);
-            background-size: 16px 16px;
-        }
-
-        .pixel-card {
-            background-color: #1e1b4b;
-            border: 4px solid #312e81;
-            outline: 2px solid #6366f1;
-            box-shadow: 0 8px 0 #0f172a, 0 15px 25px rgba(0, 0, 0, 0.4);
-            position: relative;
-        }
-
-        .pixel-card-header {
-            background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%);
-            border-bottom: 3px solid #4338ca;
-        }
-
-        .pixel-btn-primary {
-            background: linear-gradient(to bottom, #10b981 0%, #059669 100%);
-            border: 2px solid #047857;
-            outline: 2px solid #34d399;
-            box-shadow: 0 4px 0 #064e3b;
-            transition: all 0.1s ease;
-        }
-        .pixel-btn-primary:hover {
-            background: linear-gradient(to bottom, #34d399 0%, #10b981 100%);
-        }
-        .pixel-btn-primary:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #064e3b;
-        }
-
-        .pixel-btn-secondary {
-            background: linear-gradient(to bottom, #4f46e5 0%, #3730a3 100%);
-            border: 2px solid #312e81;
-            outline: 2px solid #818cf8;
-            box-shadow: 0 4px 0 #1e1b4b;
-            transition: all 0.1s ease;
-        }
-        .pixel-btn-secondary:hover {
-            background: linear-gradient(to bottom, #6366f1 0%, #4338ca 100%);
-        }
-
         /* 自訂滾動條 */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: #f1f5f9;
         }
         ::-webkit-scrollbar-thumb {
-            background: #312e81;
+            background: #cbd5e1;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #4f46e5;
+            background: #94a3b8;
         }
     </style>
 </head>
-<body class="game-canvas text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
 
-    <!-- Game Menu Top Navbar -->
+    <!-- Game Menu Top Navbar (依規範僅保留首頁按鈕) -->
     <nav class="bg-slate-950 border-b-4 border-indigo-600 shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -96,186 +50,185 @@
                         <div>
                             <div class="font-pixel-title text-yellow-400 text-xs tracking-wider flex items-center gap-1.5">
                                 <span>INSURE GAME</span>
-                                <span class="bg-emerald-800 text-emerald-200 text-[9px] px-1.5 py-0.2 rounded border border-emerald-500">PRO CRAWLER</span>
+                                <span class="bg-indigo-800 text-indigo-200 text-[9px] px-1.5 py-0.2 rounded border border-indigo-500">v1.0</span>
                             </div>
                             <div class="text-white font-extrabold text-base tracking-wide flex items-center gap-2">
-                                <span>三商投資型月配基金探勘儀</span>
-                                <span class="text-xs bg-indigo-900/80 text-indigo-300 px-2 py-0.5 rounded border border-indigo-600 hidden sm:inline">MoneyDJ 數據分析</span>
+                                <span>保險財務試算系統</span>
                             </div>
                         </div>
                     </a>
                 </div>
 
-                <!-- Navigation Tabs -->
-                <div class="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm">
-                    <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded font-bold border border-slate-700 transition">
+                <!-- Navigation Tabs (僅保留首頁 button) -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <a href="index.html" class="text-xs sm:text-sm bg-slate-900 text-indigo-300 hover:bg-indigo-600 hover:text-white px-3.5 py-2 rounded font-extrabold border-2 border-indigo-500 shadow-[0_3px_0_#1e1b4b] transition flex items-center gap-1.5">
                         <i class="fa-solid fa-house"></i> 首頁
                     </a>
-                    <a href="lump-sum.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded font-bold border border-slate-700 transition hidden md:inline">
-                        <i class="fa-solid fa-calculator"></i> 躉繳試算
-                    </a>
-                    <a href="tax-planning.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded font-bold border border-slate-700 transition hidden md:inline">
-                        <i class="fa-solid fa-shield-halved"></i> 稅務規劃
-                    </a>
-                    <button onclick="refreshData()" class="pixel-btn-primary text-slate-950 font-black px-3.5 py-1.5 rounded flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i>
-                        <span class="hidden sm:inline">線上爬蟲更新</span>
-                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
 
-        <!-- Top Header & Status Banner -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-indigo-950/60 border-2 border-indigo-800/80 rounded-2xl p-5 shadow-lg">
+        <!-- Top Header & Status Banner (與其他頁面風格一致的漸層卡片) -->
+        <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-indigo-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <div class="inline-flex items-center gap-2 bg-indigo-900/90 border border-indigo-500 px-3 py-1 rounded-md text-xs font-bold text-yellow-300 mb-2">
-                    <i class="fa-solid fa-satellite-dish animate-pulse text-emerald-400"></i>
-                    <span>三商美邦投資型商品專區・即時配息與波動數據監測</span>
-                </div>
-                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-wide">
-                    穩定淨值 × 高月配息標的篩選器
-                </h1>
-                <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-                    針對三商美邦投資型保單連動之全數標的（境內/境外基金、類全委帳戶、ETF）進行即時爬梳，結合「近12期月配息率」與「年化標準差」量化評估，嚴格排除「假高息真吃本金」陷阱。
-                </p>
-            </div>
-            <div class="flex flex-row md:flex-col items-end justify-between border-t md:border-t-0 border-indigo-900 pt-3 md:pt-0 text-right text-xs">
-                <div class="text-slate-400">資料來源：<span class="text-indigo-300 font-semibold">MoneyDJ 數據專區</span></div>
-                <div class="text-slate-400 mt-0.5">最後更新：<span class="text-yellow-400 font-bold" id="update-date-text">載入中...</span></div>
-                <div class="text-emerald-400 font-bold mt-1 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
-                    <i class="fa-solid fa-check-circle"></i> 篩選池：<span id="total-monthly-count">0</span> 檔月配標的
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center text-yellow-300 shadow">
+                        <i class="fa-solid fa-satellite-dish text-2xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">三商投資型月配基金探勘儀</h1>
+                            <span class="text-xs bg-indigo-500/40 text-indigo-100 px-2.5 py-0.5 rounded-full border border-indigo-300/30 hidden sm:inline">MoneyDJ 數據專區</span>
+                        </div>
+                        <p class="text-indigo-100 text-xs sm:text-sm mt-1 font-medium">
+                            即時量化評估「近 12 期年化配息率」與「年化標準差」｜嚴格排除本金侵蝕與假高息標的
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="flex flex-row md:flex-col items-end justify-between gap-2 text-right self-stretch md:self-auto border-t md:border-t-0 border-indigo-600/50 pt-3 md:pt-0">
+                <div class="flex items-center gap-2">
+                    <button onclick="refreshData()" class="bg-white/10 hover:bg-white/20 text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition flex items-center gap-1.5 border border-white/20 cursor-pointer shadow-sm">
+                        <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i>
+                        <span>線上爬蟲更新</span>
+                    </button>
+                </div>
+                <div class="text-xs text-indigo-200">
+                    最後更新：<span class="text-yellow-300 font-bold" id="update-date-text">載入中...</span>
+                    <span class="mx-1">|</span>
+                    月配池：<span id="total-monthly-count" class="font-bold text-white">0</span> 檔
+                </div>
+            </div>
+        </header>
 
-        <!-- 4 大核心洞察卡片 (KPI Badges) -->
+        <!-- 4 大核心洞察卡片 (KPI Badges - 白底陰影卡片風格) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Card 1: 綜合性價比之王 -->
-            <div class="pixel-card rounded-xl p-4 flex flex-col justify-between">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
                 <div>
                     <div class="flex justify-between items-center text-xs font-bold mb-2">
-                        <span class="text-yellow-400 flex items-center gap-1">
-                            <i class="fa-solid fa-crown text-yellow-300"></i> 綜合評分榜首
+                        <span class="text-amber-600 flex items-center gap-1.5">
+                            <i class="fa-solid fa-crown text-amber-500 text-sm"></i> 綜合評分榜首
                         </span>
-                        <span class="text-slate-400 text-[10px]" id="kpi-best-score-badge">LV.99 首選</span>
+                        <span class="text-amber-700 bg-amber-50 border border-amber-200 text-[10px] px-2 py-0.5 rounded-full font-bold" id="kpi-best-score-badge">LV.99 首選</span>
                     </div>
-                    <div class="text-base font-extrabold text-white truncate" id="kpi-best-score-name">載入中...</div>
-                    <div class="text-xs text-yellow-300/90 mt-1 flex items-center gap-2">
-                        <span>年化配息: <b id="kpi-best-score-yield">-%</b></span>
-                        <span>標準差: <b id="kpi-best-score-std">-%</b></span>
+                    <div class="text-base font-extrabold text-slate-800 truncate" id="kpi-best-score-name">載入中...</div>
+                    <div class="text-xs text-slate-600 mt-2 flex items-center gap-3">
+                        <span>年化配息: <b class="text-amber-600 font-extrabold" id="kpi-best-score-yield">-%</b></span>
+                        <span>標準差: <b class="text-slate-800 font-bold" id="kpi-best-score-std">-%</b></span>
                     </div>
                 </div>
-                <div class="text-[11px] text-slate-400 border-t border-indigo-950 pt-2 mt-3 flex justify-between">
+                <div class="text-xs text-slate-500 border-t border-slate-100 pt-2.5 mt-3 flex justify-between">
                     <span>近1年報酬率</span>
-                    <span class="text-emerald-400 font-bold" id="kpi-best-score-ret1y">-%</span>
+                    <span class="text-emerald-600 font-bold" id="kpi-best-score-ret1y">-%</span>
                 </div>
             </div>
 
             <!-- Card 2: 極致抗震最穩標的 -->
-            <div class="pixel-card rounded-xl p-4 flex flex-col justify-between">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
                 <div>
                     <div class="flex justify-between items-center text-xs font-bold mb-2">
-                        <span class="text-emerald-400 flex items-center gap-1">
-                            <i class="fa-solid fa-shield-halved text-emerald-300"></i> 防禦低波動之王
+                        <span class="text-emerald-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved text-emerald-600 text-sm"></i> 防禦低波動之王
                         </span>
-                        <span class="text-emerald-400 text-[10px]">極致穩健</span>
+                        <span class="text-emerald-700 bg-emerald-50 border border-emerald-200 text-[10px] px-2 py-0.5 rounded-full font-bold">極致穩健</span>
                     </div>
-                    <div class="text-base font-extrabold text-white truncate" id="kpi-lowest-std-name">載入中...</div>
-                    <div class="text-xs text-emerald-300/90 mt-1 flex items-center gap-2">
-                        <span>年化標準差: <b id="kpi-lowest-std-val">-%</b></span>
+                    <div class="text-base font-extrabold text-slate-800 truncate" id="kpi-lowest-std-name">載入中...</div>
+                    <div class="text-xs text-slate-600 mt-2 flex items-center gap-2">
+                        <span>年化標準差: <b class="text-emerald-700 font-extrabold" id="kpi-lowest-std-val">-%</b></span>
                     </div>
                 </div>
-                <div class="text-[11px] text-slate-400 border-t border-indigo-950 pt-2 mt-3 flex justify-between">
+                <div class="text-xs text-slate-500 border-t border-slate-100 pt-2.5 mt-3 flex justify-between">
                     <span>配息率 / 1年報酬</span>
-                    <span class="text-white font-bold" id="kpi-lowest-std-yield">-% / -%</span>
+                    <span class="text-slate-800 font-bold" id="kpi-lowest-std-yield">-% / -%</span>
                 </div>
             </div>
 
             <!-- Card 3: 最高現金流之王 -->
-            <div class="pixel-card rounded-xl p-4 flex flex-col justify-between">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
                 <div>
                     <div class="flex justify-between items-center text-xs font-bold mb-2">
-                        <span class="text-amber-400 flex items-center gap-1">
-                            <i class="fa-solid fa-money-bill-wave text-amber-300"></i> 現金流最高標的
+                        <span class="text-cyan-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-money-bill-wave text-cyan-600 text-sm"></i> 現金流最高標的
                         </span>
-                        <span class="text-amber-300 text-[10px]">高月配息</span>
+                        <span class="text-cyan-700 bg-cyan-50 border border-cyan-200 text-[10px] px-2 py-0.5 rounded-full font-bold">高月配息</span>
                     </div>
-                    <div class="text-base font-extrabold text-white truncate" id="kpi-highest-yield-name">載入中...</div>
-                    <div class="text-xs text-amber-300/90 mt-1 flex items-center gap-2">
-                        <span>最新年化息率: <b id="kpi-highest-yield-val">-%</b></span>
+                    <div class="text-base font-extrabold text-slate-800 truncate" id="kpi-highest-yield-name">載入中...</div>
+                    <div class="text-xs text-slate-600 mt-2 flex items-center gap-2">
+                        <span>最新年化息率: <b class="text-amber-600 font-extrabold" id="kpi-highest-yield-val">-%</b></span>
                     </div>
                 </div>
-                <div class="text-[11px] text-slate-400 border-t border-indigo-950 pt-2 mt-3 flex justify-between">
+                <div class="text-xs text-slate-500 border-t border-slate-100 pt-2.5 mt-3 flex justify-between">
                     <span>標準差 / 幣別</span>
-                    <span class="text-white font-bold" id="kpi-highest-yield-meta">-%</span>
+                    <span class="text-slate-800 font-bold" id="kpi-highest-yield-meta">-%</span>
                 </div>
             </div>
 
             <!-- Card 4: 健檢通過率統計 -->
-            <div class="pixel-card rounded-xl p-4 flex flex-col justify-between">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
                 <div>
                     <div class="flex justify-between items-center text-xs font-bold mb-2">
-                        <span class="text-cyan-400 flex items-center gap-1">
-                            <i class="fa-solid fa-heart-pulse text-cyan-300"></i> 優選品質標的池
+                        <span class="text-indigo-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-heart-pulse text-indigo-600 text-sm"></i> 優選品質標的池
                         </span>
-                        <span class="text-cyan-300 text-[10px]">健檢合格</span>
+                        <span class="text-indigo-700 bg-indigo-50 border border-indigo-200 text-[10px] px-2 py-0.5 rounded-full font-bold">健檢合格</span>
                     </div>
-                    <div class="text-2xl font-black text-white" id="kpi-safe-count">0 <span class="text-xs text-slate-400 font-normal">檔通過</span></div>
-                    <div class="text-xs text-slate-400 mt-1">
-                        年化配息 ≥ 6% 且 標準差 ≤ 15% 且 近1年報酬 > 0%
+                    <div class="text-2xl font-black text-indigo-950" id="kpi-safe-count">0 <span class="text-xs text-slate-500 font-normal">檔通過</span></div>
+                    <div class="text-xs text-slate-500 mt-1">
+                        息率 ≥ 6% 且 標準差 ≤ 15% 且 1年報酬 > 0%
                     </div>
                 </div>
-                <div class="text-[11px] text-slate-400 border-t border-indigo-950 pt-2 mt-3 flex justify-between">
+                <div class="text-xs text-slate-500 border-t border-slate-100 pt-2.5 mt-3 flex justify-between">
                     <span>假高息警示標的</span>
-                    <span class="text-rose-400 font-bold" id="kpi-danger-count">0 檔</span>
+                    <span class="text-rose-600 font-bold" id="kpi-danger-count">0 檔</span>
                 </div>
             </div>
         </div>
 
-        <!-- 篩選器與快速預設 (Control Panel) -->
-        <div class="bg-slate-900 border-2 border-indigo-900/80 rounded-xl p-5 shadow-xl space-y-4">
+        <!-- 篩選器與快速預設 (Control Panel - 採用與 lump-sum 一致的白底表單質感) -->
+        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-md border border-slate-200 space-y-5">
             <!-- 快速預設標籤按鈕 -->
-            <div class="flex flex-wrap items-center gap-2 pb-3 border-b border-slate-800 text-xs">
-                <span class="text-indigo-300 font-bold flex items-center gap-1 mr-1">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> 智慧篩選矩陣：
+            <div class="flex flex-wrap items-center gap-2 pb-4 border-b border-slate-200 text-xs">
+                <span class="text-slate-700 font-bold flex items-center gap-1.5 mr-1">
+                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-600"></i> 智慧篩選矩陣：
                 </span>
-                <button onclick="setPreset('all')" id="btn-preset-all" class="px-3 py-1.5 rounded-lg font-bold border transition bg-indigo-600 border-indigo-400 text-white">
+                <button onclick="setPreset('all')" id="btn-preset-all" class="px-3.5 py-1.5 rounded-lg font-bold border transition bg-indigo-600 border-indigo-600 text-white shadow-sm">
                     全部標的
                 </button>
-                <button onclick="setPreset('balanced_gem')" id="btn-preset-balanced_gem" class="px-3 py-1.5 rounded-lg font-bold border border-slate-700 bg-slate-800 text-slate-300 hover:border-yellow-400 hover:text-yellow-300 transition">
+                <button onclick="setPreset('balanced_gem')" id="btn-preset-balanced_gem" class="px-3.5 py-1.5 rounded-lg font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:border-amber-400 hover:text-amber-700 hover:bg-amber-50 transition">
                     ⭐ 嚴選穩健高息 (息率≥6% & 標準差≤15% & 1年>0%)
                 </button>
-                <button onclick="setPreset('ultra_stable')" id="btn-preset-ultra_stable" class="px-3 py-1.5 rounded-lg font-bold border border-slate-700 bg-slate-800 text-slate-300 hover:border-emerald-400 hover:text-emerald-300 transition">
+                <button onclick="setPreset('ultra_stable')" id="btn-preset-ultra_stable" class="px-3.5 py-1.5 rounded-lg font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 transition">
                     🛡️ 極低波動防禦 (標準差≤8%)
                 </button>
-                <button onclick="setPreset('high_cashflow')" id="btn-preset-high_cashflow" class="px-3 py-1.5 rounded-lg font-bold border border-slate-700 bg-slate-800 text-slate-300 hover:border-amber-400 hover:text-amber-300 transition">
+                <button onclick="setPreset('high_cashflow')" id="btn-preset-high_cashflow" class="px-3.5 py-1.5 rounded-lg font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 hover:bg-indigo-50 transition">
                     💰 8% 以上高現金流 (年化息率≥8%)
                 </button>
-                <button onclick="toggleExcludeErosion()" id="btn-toggle-erosion" class="px-3 py-1.5 rounded-lg font-bold border border-rose-800/80 bg-rose-950/40 text-rose-300 hover:bg-rose-900/50 transition ml-auto flex items-center gap-1.5">
-                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                <button onclick="toggleExcludeErosion()" id="btn-toggle-erosion" class="px-3.5 py-1.5 rounded-lg font-bold border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 transition ml-auto flex items-center gap-1.5">
+                    <i class="fa-solid fa-filter-circle-xmark text-rose-600"></i>
                     <span id="erosion-btn-text">排除本金嚴重侵蝕標的 (已啟用)</span>
                 </button>
             </div>
 
             <!-- 多維度下拉選單與即時搜尋 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                 <!-- 搜尋 -->
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-bold text-slate-400 mb-1">關鍵字搜尋 (標的名稱 / 基金代碼 / 保單代號)</label>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">關鍵字搜尋 (標的名稱 / 基金代碼 / 保單代號)</label>
                     <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500"></i>
-                        <input type="text" id="search-input" placeholder="例：安聯、統一、施羅德、美元、MDI..." class="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-xs sm:text-sm">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" id="search-input" placeholder="例：安聯、統一、施羅德、美元、MDI..." class="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-xs sm:text-sm font-medium transition">
                     </div>
                 </div>
 
                 <!-- 幣別篩選 -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-400 mb-1">計價幣別</label>
-                    <select id="currency-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500 text-xs sm:text-sm">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">計價幣別</label>
+                    <select id="currency-select" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-xs sm:text-sm font-medium transition">
                         <option value="ALL">全部幣別 (All)</option>
                         <option value="台幣">新台幣 (TWD)</option>
                         <option value="美元">美元 (USD)</option>
@@ -288,8 +241,8 @@
 
                 <!-- 標的類別篩選 -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-400 mb-1">標的種類</label>
-                    <select id="kind-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500 text-xs sm:text-sm">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">標的種類</label>
+                    <select id="kind-select" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-xs sm:text-sm font-medium transition">
                         <option value="ALL">全部種類 (All)</option>
                         <option value="B">境外基金 (B類)</option>
                         <option value="A">境內基金 (A類)</option>
@@ -300,8 +253,8 @@
 
                 <!-- 風險等級 RR -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-400 mb-1">風險收益等級 (RR)</label>
-                    <select id="rr-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500 text-xs sm:text-sm">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">風險收益等級 (RR)</label>
+                    <select id="rr-select" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-xs sm:text-sm font-medium transition">
                         <option value="ALL">全部等級 (RR1~RR5)</option>
                         <option value="RR1">RR1 (極保守/貨幣型)</option>
                         <option value="RR2">RR2 (保守/投資等級債)</option>
@@ -313,24 +266,24 @@
             </div>
 
             <!-- 排序與即時篩選統計列 -->
-            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs">
-                <div class="text-slate-400 font-medium">
-                    顯示符合條件標的：<span class="text-yellow-400 font-black text-sm" id="filtered-count">0</span> / <span id="total-count">0</span> 檔
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
+                <div class="text-slate-600 font-medium">
+                    顯示符合條件標的：<span class="text-indigo-600 font-black text-sm" id="filtered-count">0</span> / <span id="total-count" class="font-bold">0</span> 檔
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <span class="text-slate-400 font-bold">排序方式：</span>
-                    <div class="inline-flex rounded-lg border border-slate-700 bg-slate-950 p-0.5">
-                        <button onclick="setSort('score')" id="sort-score" class="px-2.5 py-1 rounded text-xs font-bold transition bg-indigo-600 text-white">
+                    <span class="text-slate-500 font-bold">排序方式：</span>
+                    <div class="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+                        <button onclick="setSort('score')" id="sort-score" class="px-2.5 py-1 rounded text-xs font-bold transition bg-indigo-600 text-white shadow-sm">
                             🏆 綜合評分
                         </button>
-                        <button onclick="setSort('ann_yield')" id="sort-ann_yield" class="px-2.5 py-1 rounded text-xs font-bold transition text-slate-400 hover:text-white">
+                        <button onclick="setSort('ann_yield')" id="sort-ann_yield" class="px-2.5 py-1 rounded text-xs font-semibold transition text-slate-600 hover:text-slate-900">
                             💰 配息率 (高→低)
                         </button>
-                        <button onclick="setSort('std')" id="sort-std" class="px-2.5 py-1 rounded text-xs font-bold transition text-slate-400 hover:text-white">
+                        <button onclick="setSort('std')" id="sort-std" class="px-2.5 py-1 rounded text-xs font-semibold transition text-slate-600 hover:text-slate-900">
                             🛡️ 標準差 (穩→震)
                         </button>
-                        <button onclick="setSort('ret_1y')" id="sort-ret_1y" class="px-2.5 py-1 rounded text-xs font-bold transition text-slate-400 hover:text-white">
+                        <button onclick="setSort('ret_1y')" id="sort-ret_1y" class="px-2.5 py-1 rounded text-xs font-semibold transition text-slate-600 hover:text-slate-900">
                             📈 近1年報酬
                         </button>
                     </div>
@@ -338,107 +291,114 @@
             </div>
         </div>
 
-        <!-- 數據表格 -->
-        <div class="bg-slate-950 border-2 border-indigo-950 rounded-2xl shadow-2xl overflow-hidden">
+        <!-- 數據表格 (白底高清晰表格) -->
+        <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs sm:text-sm text-slate-300">
-                    <thead class="bg-slate-900/90 text-slate-400 border-b-2 border-indigo-950 font-bold text-xs uppercase tracking-wider">
+                <table class="w-full text-left text-xs sm:text-sm text-slate-700">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 font-bold text-xs uppercase tracking-wider">
                         <tr>
                             <th class="p-3.5 pl-5">標的名稱 / 代號</th>
                             <th class="p-3.5 text-center">幣別</th>
                             <th class="p-3.5 text-right">最新淨值</th>
                             <th class="p-3.5 text-right">最近單月配息</th>
-                            <th class="p-3.5 text-right text-amber-300 cursor-pointer hover:text-white" onclick="setSort('ann_yield')">
+                            <th class="p-3.5 text-right text-amber-700 cursor-pointer hover:text-amber-800" onclick="setSort('ann_yield')">
                                 年化配息率 <i class="fa-solid fa-sort text-[10px]"></i>
                             </th>
-                            <th class="p-3.5 text-right text-emerald-400 cursor-pointer hover:text-white" onclick="setSort('std')">
+                            <th class="p-3.5 text-right text-emerald-700 cursor-pointer hover:text-emerald-800" onclick="setSort('std')">
                                 年化標準差 <i class="fa-solid fa-sort text-[10px]"></i>
                             </th>
-                            <th class="p-3.5 text-right cursor-pointer hover:text-white" onclick="setSort('ret_1y')">
+                            <th class="p-3.5 text-right cursor-pointer hover:text-slate-900" onclick="setSort('ret_1y')">
                                 近1年報酬 <i class="fa-solid fa-sort text-[10px]"></i>
                             </th>
-                            <th class="p-3.5 text-center text-yellow-300 cursor-pointer hover:text-white" onclick="setSort('score')">
+                            <th class="p-3.5 text-center text-indigo-700 cursor-pointer hover:text-indigo-800" onclick="setSort('score')">
                                 綜合評分 <i class="fa-solid fa-sort text-[10px]"></i>
                             </th>
                             <th class="p-3.5 text-center">健檢狀態</th>
-                            <th class="p-3.5 pr-5 text-center">歷史明細</th>
+                            <th class="p-3.5 pr-5 text-center">操作 / 明細</th>
                         </tr>
                     </thead>
-                    <tbody id="funds-tbody" class="divide-y divide-slate-900 font-sans">
+                    <tbody id="funds-tbody" class="divide-y divide-slate-100 font-sans">
                         <!-- 動態渲染 -->
                     </tbody>
                 </table>
             </div>
 
             <!-- 無資料提示 -->
-            <div id="no-data-msg" class="hidden p-12 text-center text-slate-500">
-                <i class="fa-solid fa-folder-open text-3xl mb-2"></i>
-                <p>查無符合篩選條件的標的，請嘗試放寬篩選條件或清除關鍵字。</p>
+            <div id="no-data-msg" class="hidden p-12 text-center text-slate-400">
+                <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300"></i>
+                <p class="text-sm font-medium">查無符合篩選條件的標的，請嘗試放寬篩選條件或清除關鍵字。</p>
             </div>
         </div>
 
     </main>
 
-    <!-- 配息歷史 Modal 彈跳視窗 -->
-    <div id="history-modal" onclick="if(event.target === this) closeModal()" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-slate-900 border-4 border-indigo-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-800 pb-3">
+    <!-- 配息歷史 Modal 彈跳視窗 (白底質感) -->
+    <div id="history-modal" onclick="if(event.target === this) closeModal()" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-100 pb-3">
                 <div>
-                    <span class="text-xs font-bold text-yellow-400" id="modal-fund-code">CODE</span>
-                    <h3 class="text-lg font-black text-white" id="modal-fund-name">基金名稱</h3>
+                    <span class="text-xs font-bold text-indigo-600 font-mono" id="modal-fund-code">CODE</span>
+                    <h3 class="text-lg font-black text-slate-900 mt-0.5" id="modal-fund-name">基金名稱</h3>
                 </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl p-1">
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-xl p-1 transition">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
             <div class="space-y-3">
-                <div class="flex justify-between items-center text-xs bg-slate-950 p-3 rounded-lg border border-slate-800">
+                <div class="flex justify-between items-center text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                     <div>
-                        <span class="text-slate-400">目前淨值：</span>
-                        <b class="text-white text-sm" id="modal-nav">0</b>
+                        <span class="text-slate-500">目前淨值：</span>
+                        <b class="text-slate-900 text-sm font-bold" id="modal-nav">0</b>
                     </div>
                     <div>
-                        <span class="text-slate-400">最新年化配息率：</span>
-                        <b class="text-amber-400 text-sm" id="modal-yield">0%</b>
+                        <span class="text-slate-500">最新年化息率：</span>
+                        <b class="text-amber-600 text-sm font-black" id="modal-yield">0%</b>
                     </div>
                     <div>
-                        <span class="text-slate-400">年化標準差：</span>
-                        <b class="text-emerald-400 text-sm" id="modal-std">0%</b>
+                        <span class="text-slate-500">年化標準差：</span>
+                        <b class="text-emerald-700 text-sm font-bold" id="modal-std">0%</b>
                     </div>
                 </div>
 
-                <div class="text-xs font-bold text-indigo-300">近 12 期除息與金額紀錄走勢：</div>
-                <div class="max-h-64 overflow-y-auto border border-slate-800 rounded-lg">
+                <div class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-chart-line text-indigo-600"></i> 近 12 期除息與基準淨值紀錄：
+                </div>
+                <div class="max-h-64 overflow-y-auto border border-slate-200 rounded-xl">
                     <table class="w-full text-xs text-left">
-                        <thead class="bg-slate-950 text-slate-400 sticky top-0 border-b border-slate-800">
+                        <thead class="bg-slate-50 text-slate-500 sticky top-0 border-b border-slate-200 font-medium">
                             <tr>
                                 <th class="p-2.5">除息日期</th>
                                 <th class="p-2.5 text-right">每單位配息金額</th>
                                 <th class="p-2.5 text-right">除息基準淨值</th>
                             </tr>
                         </thead>
-                        <tbody id="modal-history-tbody" class="divide-y divide-slate-800/60 font-mono">
+                        <tbody id="modal-history-tbody" class="divide-y divide-slate-100 font-mono">
                             <!-- 填入配息記錄 -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
-                <a id="modal-moneydj-link" href="#" target="_blank" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-bold">
+            <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
+                <a id="modal-moneydj-link" href="#" target="_blank" class="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 font-bold transition">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> 開啟 MoneyDJ 官方頁面
                 </a>
-                <button onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-lg font-bold">
-                    關閉
-                </button>
+                <div class="flex gap-2">
+                    <a id="modal-calc-link" href="lump-sum.html" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-bold transition flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-calculator"></i> 帶入躉繳試算
+                    </a>
+                    <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3.5 py-2 rounded-lg font-bold transition">
+                        關閉
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 非同步浮動 Toast 提示 (取代瀏覽器卡死 alert) -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-20 opacity-0 pointer-events-none bg-slate-900 border-2 border-indigo-500 rounded-xl px-4 py-3 shadow-2xl flex items-center gap-3 text-sm text-white">
-        <i id="toast-icon" class="fa-solid fa-circle-info text-yellow-400 text-lg"></i>
+    <!-- 非同步浮動 Toast 提示 -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-20 opacity-0 pointer-events-none bg-white border-2 border-indigo-600 rounded-xl px-4 py-3 shadow-2xl flex items-center gap-3 text-sm text-slate-800 font-medium">
+        <i id="toast-icon" class="fa-solid fa-circle-info text-indigo-600 text-lg"></i>
         <span id="toast-msg">提示訊息</span>
     </div>
 
@@ -449,6 +409,31 @@
         let currentPreset = 'all';
         let excludeErosion = true;
 
+        // MoneyDJ 官方標準連結生成函式 (支援三商美邦專區 main.html 框架與保單商品代碼 bank_code 綁定)
+        function getMoneyDJUrl(f) {
+            const kind = f.kind || 'B';
+            const code = f.code || '';
+            const bankCode = f.bank_code || '';
+            let subUrl = '';
+
+            if (kind === 'A') {
+                subUrl = '/w/wr/wr01.djhtm?a=' + code + (bankCode ? '-' + bankCode : '');
+            } else if (kind === 'B') {
+                subUrl = '/w/wb/wb01.djhtm?a=' + code + (bankCode ? '-' + bankCode : '');
+            } else if (kind === 'C') {
+                subUrl = '/ETFWeb/html/ET011001.djhtm?#ETFID=' + code + (bankCode ? '~' + bankCode : '');
+            } else if (kind === 'D') {
+                subUrl = '/w/wfv/wFV01.djhtm?a=' + (bankCode || code);
+            } else if (kind === 'E') {
+                subUrl = '/w/wcurr/currencyaccount01.djhtm?a=' + (bankCode || code);
+            } else {
+                subUrl = '/w/wb/wb01.djhtm?a=' + code;
+            }
+
+            return 'https://mlivul.moneydj.com/main.html?sUrl=' + encodeURIComponent(subUrl);
+        }
+
+        // 浮動提示框
         function showToast(msg, type = 'info') {
             const toast = document.getElementById('toast');
             const msgEl = document.getElementById('toast-msg');
@@ -456,13 +441,13 @@
             msgEl.innerText = msg;
             if (type === 'success') {
                 toast.className = toast.className.replace(/border-[a-z]+-\d+/g, 'border-emerald-500');
-                iconEl.className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+                iconEl.className = 'fa-solid fa-circle-check text-emerald-600 text-lg';
             } else if (type === 'error') {
                 toast.className = toast.className.replace(/border-[a-z]+-\d+/g, 'border-rose-500');
-                iconEl.className = 'fa-solid fa-triangle-exclamation text-rose-400 text-lg';
+                iconEl.className = 'fa-solid fa-triangle-exclamation text-rose-600 text-lg';
             } else {
-                toast.className = toast.className.replace(/border-[a-z]+-\d+/g, 'border-indigo-500');
-                iconEl.className = 'fa-solid fa-circle-info text-yellow-400 text-lg';
+                toast.className = toast.className.replace(/border-[a-z]+-\d+/g, 'border-indigo-600');
+                iconEl.className = 'fa-solid fa-circle-info text-indigo-600 text-lg';
             }
             toast.classList.remove('translate-y-20', 'opacity-0');
             setTimeout(() => {
@@ -476,7 +461,6 @@
                 loadDataIntoUI(window.FUNDS_DATA);
                 return;
             }
-            // Fallback (若透過 Web 伺服器打開)
             fetch('funds-data.json')
                 .then(res => res.json())
                 .then(data => loadDataIntoUI(data))
@@ -530,7 +514,7 @@
             // 4. 健檢統計 (安全 vs 侵蝕)
             const safeCount = allFunds.filter(f => f.ann_yield >= 6 && f.std && f.std <= 15 && f.ret_1y > 0).length;
             const dangerCount = allFunds.filter(f => f.ann_yield >= 8 && f.ret_1y < -5).length;
-            document.getElementById('kpi-safe-count').innerHTML = `${safeCount} <span class="text-xs text-slate-400 font-normal">檔通過</span>`;
+            document.getElementById('kpi-safe-count').innerHTML = `${safeCount} <span class="text-xs text-slate-500 font-normal">檔通過</span>`;
             document.getElementById('kpi-danger-count').innerText = `${dangerCount} 檔`;
         }
 
@@ -608,65 +592,79 @@
                 const isGem = f.ann_yield >= 6.5 && f.std && f.std <= 12 && f.ret_1y > 3;
                 const isDefensive = f.std && f.std <= 7.5;
 
-                let badge = `<span class="text-slate-500 text-xs">一般</span>`;
+                let badge = `<span class="text-slate-400 text-xs">一般</span>`;
                 if (isGem) {
-                    badge = `<span class="inline-flex items-center gap-1 bg-yellow-500/20 text-yellow-300 border border-yellow-500/50 text-[10px] px-2 py-0.5 rounded font-black tracking-wide"><i class="fa-solid fa-star text-[9px]"></i> 穩健首選</span>`;
+                    badge = `<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-300 text-[10px] px-2 py-0.5 rounded font-black tracking-wide"><i class="fa-solid fa-star text-[9px] text-amber-500"></i> 穩健首選</span>`;
                 } else if (isDefensive) {
-                    badge = `<span class="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 text-[10px] px-2 py-0.5 rounded font-bold"><i class="fa-solid fa-shield text-[9px]"></i> 極穩防禦</span>`;
+                    badge = `<span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-300 text-[10px] px-2 py-0.5 rounded font-bold"><i class="fa-solid fa-shield text-[9px] text-emerald-600"></i> 極穩防禦</span>`;
                 } else if (isEroding) {
-                    badge = `<span class="inline-flex items-center gap-1 bg-rose-500/20 text-rose-300 border border-rose-500/50 text-[10px] px-2 py-0.5 rounded font-bold"><i class="fa-solid fa-triangle-exclamation text-[9px]"></i> 本金侵蝕</span>`;
+                    badge = `<span class="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-300 text-[10px] px-2 py-0.5 rounded font-bold"><i class="fa-solid fa-triangle-exclamation text-[9px] text-rose-500"></i> 本金侵蝕</span>`;
                 }
 
                 // 標的種類中文標記
                 const kindMap = { 'A': '境內', 'B': '境外', 'C': 'ETF', 'D': '全委', 'E': '貨幣' };
                 const kindName = kindMap[f.kind] || f.kind;
 
-                // 標準差顏色: 小於 10 綠色，大於 20 偏紅
-                const stdColor = !f.std ? 'text-slate-500' : (f.std <= 10 ? 'text-emerald-400 font-bold' : (f.std <= 18 ? 'text-slate-200' : 'text-rose-400'));
+                // 標準差顏色: 小於 10 綠色，大於 18 偏紅
+                const stdColor = !f.std ? 'text-slate-400' : (f.std <= 10 ? 'text-emerald-700 font-bold' : (f.std <= 18 ? 'text-slate-700' : 'text-rose-600 font-bold'));
 
-                // 報酬率顏色
-                const retColor = f.ret_1y > 0 ? 'text-red-400' : (f.ret_1y < 0 ? 'text-emerald-400' : 'text-slate-400');
+                // 報酬率顏色 (符合台灣習慣：正紅、負綠或深灰)
+                const retColor = f.ret_1y > 0 ? 'text-rose-600' : (f.ret_1y < 0 ? 'text-emerald-700' : 'text-slate-600');
+
+                // 產出 MoneyDJ 官方標準網址
+                const correctLink = getMoneyDJUrl(f);
+
+                // 產生跳轉躉繳試算的連結
+                const calcUrl = `lump-sum.html?name=${encodeURIComponent(f.name)}&nav=${f.nav || ''}&yield=${f.ann_yield || ''}&cur=${encodeURIComponent(f.currency || '')}`;
+
+                // 標的唯一鍵值 (代碼+保單代號，避免重複 code 取錯)
+                const uniqueKey = f.bank_code ? `${f.code}_${f.bank_code}` : f.code;
 
                 return `
-                    <tr class="hover:bg-slate-900/70 transition border-b border-slate-900">
+                    <tr class="hover:bg-indigo-50/40 transition">
                         <td class="p-3.5 pl-5 max-w-xs sm:max-w-md">
                             <div class="flex items-center gap-2">
-                                <span class="bg-indigo-950 text-indigo-300 border border-indigo-700 text-[10px] px-1.5 py-0.2 rounded font-mono font-bold">${kindName}</span>
-                                <a href="${f.link}" target="_blank" class="font-extrabold text-white hover:text-yellow-400 transition truncate text-xs sm:text-sm" title="${f.name}">
+                                <span class="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] px-1.5 py-0.5 rounded font-mono font-bold whitespace-nowrap">${kindName}</span>
+                                <a href="${correctLink}" target="_blank" rel="noopener noreferrer" class="font-bold text-slate-800 hover:text-indigo-600 hover:underline transition truncate text-xs sm:text-sm" title="${f.name}">
                                     ${f.name}
                                 </a>
                             </div>
-                            <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
-                                <span class="font-mono text-slate-400">${f.code}</span>
+                            <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-2">
+                                <span class="font-mono text-slate-600 font-medium">${f.code}</span>
                                 <span>|</span>
-                                <span>保單代碼: ${f.bank_code || '-'}</span>
+                                <span>保單: <b class="text-slate-600">${f.bank_code || '-'}</b></span>
                                 <span>|</span>
-                                <span class="text-indigo-400">${f.rr || '-'}</span>
+                                <span class="text-indigo-600 font-semibold">${f.rr || '-'}</span>
                             </div>
                         </td>
-                        <td class="p-3.5 text-center font-bold text-xs text-slate-300">${f.currency}</td>
-                        <td class="p-3.5 text-right font-mono font-bold text-white text-xs sm:text-sm">${f.nav ? f.nav.toFixed(2) : '-'}</td>
-                        <td class="p-3.5 text-right font-mono text-xs">
-                            <div class="text-slate-200 font-bold">${f.div_amt > 0 ? f.div_amt : '-'}</div>
-                            <div class="text-[10px] text-slate-500">${f.div_date ? f.div_date.slice(5) : ''}</div>
+                        <td class="p-3.5 text-center font-bold text-xs text-slate-700 whitespace-nowrap">${f.currency}</td>
+                        <td class="p-3.5 text-right font-mono font-bold text-slate-800 text-xs sm:text-sm whitespace-nowrap">${f.nav ? f.nav.toFixed(2) : '-'}</td>
+                        <td class="p-3.5 text-right font-mono text-xs whitespace-nowrap">
+                            <div class="text-slate-800 font-bold">${f.div_amt > 0 ? f.div_amt : '-'}</div>
+                            <div class="text-[10px] text-slate-400">${f.div_date ? f.div_date.slice(5) : ''}</div>
                         </td>
-                        <td class="p-3.5 text-right font-mono font-black text-amber-400 text-sm">
+                        <td class="p-3.5 text-right font-mono font-black text-amber-600 text-sm whitespace-nowrap">
                             ${f.ann_yield > 0 ? f.ann_yield + '%' : '-'}
                         </td>
-                        <td class="p-3.5 text-right font-mono text-xs ${stdColor}">
+                        <td class="p-3.5 text-right font-mono text-xs ${stdColor} whitespace-nowrap">
                             ${f.std ? f.std + '%' : '-'}
                         </td>
-                        <td class="p-3.5 text-right font-mono text-xs font-bold ${retColor}">
+                        <td class="p-3.5 text-right font-mono text-xs font-bold ${retColor} whitespace-nowrap">
                             ${f.ret_1y > 0 ? '+' : ''}${f.ret_1y}%
                         </td>
-                        <td class="p-3.5 text-center font-mono font-black text-yellow-300 text-sm">
+                        <td class="p-3.5 text-center font-mono font-black text-indigo-700 text-sm whitespace-nowrap">
                             ${f.score > 0 ? f.score : '-'}
                         </td>
-                        <td class="p-3.5 text-center">${badge}</td>
-                        <td class="p-3.5 pr-5 text-center">
-                            <button onclick="openHistoryModal(${idx}, '${f.code}')" class="bg-indigo-950 hover:bg-indigo-800 text-indigo-300 border border-indigo-700 text-xs px-2.5 py-1 rounded font-bold transition">
-                                <i class="fa-solid fa-chart-simple"></i> 明細
-                            </button>
+                        <td class="p-3.5 text-center whitespace-nowrap">${badge}</td>
+                        <td class="p-3.5 pr-5 text-center whitespace-nowrap">
+                            <div class="inline-flex items-center gap-1.5">
+                                <button onclick="openHistoryModal('${uniqueKey}')" class="bg-slate-50 hover:bg-indigo-50 text-indigo-600 border border-slate-300 hover:border-indigo-400 text-xs px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-chart-simple"></i> 明細
+                                </button>
+                                <a href="${calcUrl}" class="bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 border border-indigo-200 text-xs px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1" title="將此基金數值帶入躉繳試算表">
+                                    <i class="fa-solid fa-calculator"></i> 試算
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -677,11 +675,11 @@
         function setPreset(preset) {
             currentPreset = preset;
             document.querySelectorAll('[id^="btn-preset-"]').forEach(btn => {
-                btn.className = "px-3 py-1.5 rounded-lg font-bold border border-slate-700 bg-slate-800 text-slate-300 hover:border-yellow-400 hover:text-yellow-300 transition";
+                btn.className = "px-3.5 py-1.5 rounded-lg font-semibold border border-slate-200 bg-slate-50 text-slate-700 hover:border-indigo-300 transition";
             });
             const activeBtn = document.getElementById(`btn-preset-${preset}`);
             if (activeBtn) {
-                activeBtn.className = "px-3 py-1.5 rounded-lg font-bold border transition bg-indigo-600 border-indigo-400 text-white";
+                activeBtn.className = "px-3.5 py-1.5 rounded-lg font-bold border transition bg-indigo-600 border-indigo-600 text-white shadow-sm";
             }
             renderTable();
         }
@@ -692,10 +690,10 @@
             const btn = document.getElementById('btn-toggle-erosion');
             const txt = document.getElementById('erosion-btn-text');
             if (excludeErosion) {
-                btn.className = "px-3 py-1.5 rounded-lg font-bold border border-rose-800/80 bg-rose-950/40 text-rose-300 hover:bg-rose-900/50 transition ml-auto flex items-center gap-1.5";
+                btn.className = "px-3.5 py-1.5 rounded-lg font-bold border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 transition ml-auto flex items-center gap-1.5";
                 txt.innerText = "排除本金嚴重侵蝕標的 (已啟用)";
             } else {
-                btn.className = "px-3 py-1.5 rounded-lg font-bold border border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-500 transition ml-auto flex items-center gap-1.5";
+                btn.className = "px-3.5 py-1.5 rounded-lg font-semibold border border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300 transition ml-auto flex items-center gap-1.5";
                 txt.innerText = "排除本金嚴重侵蝕標的 (已關閉)";
             }
             renderTable();
@@ -708,36 +706,41 @@
                 const el = document.getElementById(`sort-${t}`);
                 if (el) {
                     if (t === type) {
-                        el.className = "px-2.5 py-1 rounded text-xs font-bold transition bg-indigo-600 text-white";
+                        el.className = "px-2.5 py-1 rounded text-xs font-bold transition bg-indigo-600 text-white shadow-sm";
                     } else {
-                        el.className = "px-2.5 py-1 rounded text-xs font-bold transition text-slate-400 hover:text-white";
+                        el.className = "px-2.5 py-1 rounded text-xs font-semibold transition text-slate-600 hover:text-slate-900";
                     }
                 }
             });
             renderTable();
         }
 
-        // 開啟歷史配息視窗
-        function openHistoryModal(index, code) {
-            const fund = allFunds.find(f => f.code === code);
+        // 開啟歷史配息視窗 (依唯一鍵精確匹配，避免代碼重複時抓錯)
+        function openHistoryModal(uniqueKey) {
+            const fund = allFunds.find(f => (f.bank_code ? `${f.code}_${f.bank_code}` : f.code) === uniqueKey) || allFunds.find(f => f.code === uniqueKey);
             if (!fund) return;
 
-            document.getElementById('modal-fund-code').innerText = `${fund.code} (${fund.currency})`;
+            document.getElementById('modal-fund-code').innerText = `${fund.code} (${fund.currency}) ${fund.bank_code ? '｜保單: ' + fund.bank_code : ''}`;
             document.getElementById('modal-fund-name').innerText = fund.name;
             document.getElementById('modal-nav').innerText = fund.nav ? fund.nav.toFixed(2) : '-';
             document.getElementById('modal-yield').innerText = (fund.ann_yield || 0) + '%';
             document.getElementById('modal-std').innerText = (fund.std || '-') + '%';
-            document.getElementById('modal-moneydj-link').href = fund.link;
+            
+            // 填入正確 MoneyDJ 連結
+            document.getElementById('modal-moneydj-link').href = getMoneyDJUrl(fund);
+
+            // 填入帶入試算連結
+            document.getElementById('modal-calc-link').href = `lump-sum.html?name=${encodeURIComponent(fund.name)}&nav=${fund.nav || ''}&yield=${fund.ann_yield || ''}&cur=${encodeURIComponent(fund.currency || '')}`;
 
             const tbody = document.getElementById('modal-history-tbody');
             if (!fund.history || fund.history.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">暫無近期除息明細紀錄</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400">暫無近期除息明細紀錄</td></tr>`;
             } else {
                 tbody.innerHTML = fund.history.map(h => `
-                    <tr class="hover:bg-slate-900">
-                        <td class="p-2.5 text-slate-300">${h.date}</td>
-                        <td class="p-2.5 text-right font-bold text-amber-400">${h.amt}</td>
-                        <td class="p-2.5 text-right text-slate-400">${h.nav > 0 ? h.nav.toFixed(2) : '-'}</td>
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-2.5 text-slate-700">${h.date}</td>
+                        <td class="p-2.5 text-right font-bold text-amber-600">${h.amt}</td>
+                        <td class="p-2.5 text-right text-slate-600">${h.nav > 0 ? h.nav.toFixed(2) : '-'}</td>
                     </tr>
                 `).join('');
             }
@@ -764,7 +767,6 @@
                 loadDataIntoUI(data);
                 showToast('✅ 數據庫已同步為最新快照！', 'success');
             } catch (e) {
-                // 如果是本機 file:/// 打開被 Chrome 阻擋 fetch，提供優雅提示而非報錯
                 showToast('提示: 請於終端機執行 python3 crawl_funds.py 抓取當日最新數據', 'info');
             } finally {
                 icon.classList.remove('fa-spin');
