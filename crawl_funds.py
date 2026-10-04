@@ -1,6 +1,7 @@
 import concurrent.futures
 import json
 import re
+import urllib.parse
 import urllib.request
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -116,18 +117,26 @@ def crawl_and_analyze():
         penalty = max(0.1, 1 - (std / 35.0))
         score = round(ann_yield * penalty + (ret_1y * 0.15), 2) if ann_yield > 0 and std < 900 else 0.0
 
-        # 原始 MoneyDJ 連結
-        url_dict = {
-            "A": f"https://mlivul.moneydj.com/w/wr/wr01.djhtm?a={code}",
-            "B": f"https://mlivul.moneydj.com/w/wb/wb01.djhtm?a={code}",
-            "C": f"https://mlivul.moneydj.com/ETFWeb/html/ET011001.djhtm?#ETFID={code}",
-            "D": f"https://mlivul.moneydj.com/w/wfv/wfv01.djhtm?a={code}",
-            "E": f"https://mlivul.moneydj.com/w/wcurr/currencyaccount01.djhtm?a={code}",
-        }
+        bank_code = r.get("V29", "")
+        # 三商美邦 MoneyDJ 官方標準連結規範 (支援 main.html iframe 與保單商品代號綁定，避免過濾跳轉錯誤)
+        if kind == "A":
+            sub_url = f"/w/wr/wr01.djhtm?a={code}-{bank_code}" if bank_code else f"/w/wr/wr01.djhtm?a={code}"
+        elif kind == "B":
+            sub_url = f"/w/wb/wb01.djhtm?a={code}-{bank_code}" if bank_code else f"/w/wb/wb01.djhtm?a={code}"
+        elif kind == "C":
+            sub_url = f"/ETFWeb/html/ET011001.djhtm?#ETFID={code}~{bank_code}" if bank_code else f"/ETFWeb/html/ET011001.djhtm?#ETFID={code}"
+        elif kind == "D":
+            sub_url = f"/w/wfv/wFV01.djhtm?a={bank_code or code}"
+        elif kind == "E":
+            sub_url = f"/w/wcurr/currencyaccount01.djhtm?a={bank_code or code}"
+        else:
+            sub_url = f"/w/wb/wb01.djhtm?a={code}"
+
+        official_link = f"https://mlivul.moneydj.com/main.html?sUrl={urllib.parse.quote(sub_url)}"
 
         return {
             "code": code,
-            "bank_code": r.get("V29", ""),
+            "bank_code": bank_code,
             "name": name,
             "kind": kind,
             "type": f_type,
@@ -145,7 +154,7 @@ def crawl_and_analyze():
             "ann_yield": ann_yield,
             "score": score,
             "history": history,
-            "link": url_dict.get(kind, f"https://mlivul.moneydj.com/w/html/select.djhtm"),
+            "link": official_link,
         }
 
     print("[2/3] 多執行緒爬取歷史配息與計算性價比...")
