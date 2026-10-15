@@ -155,11 +155,78 @@ function checkMgmtFeeDisabledState() {
     }
 }
 
+// Exchange Rate Auto-Fetcher with Fallback
+let latestFetchedRate = null;
+
+async function fetchExchangeRate() {
+    const statusText = document.getElementById('rateStatusText');
+    const refreshIcon = document.getElementById('rateRefreshIcon');
+
+    if (refreshIcon) refreshIcon.classList.add('fa-spin');
+    if (statusText) statusText.innerText = '更新中...';
+
+    const fetchWithTimeout = async (url, timeout = 4000) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+        try {
+            const res = await fetch(url, { signal: controller.signal });
+            clearTimeout(id);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch (err) {
+            clearTimeout(id);
+            throw err;
+        }
+    };
+
+    let rate = null;
+
+    // 1. 主要來源：open.er-api.com (即時、免 Key、支援 CORS)
+    try {
+        const data = await fetchWithTimeout('https://open.er-api.com/v6/latest/USD');
+        if (data?.rates?.TWD) {
+            rate = parseFloat(data.rates.TWD);
+        }
+    } catch (e) {
+        console.warn('主要匯率 API 連線失敗，切換至備援 API...', e);
+    }
+
+    // 2. 備援來源：currency-api (CDN 鏡像)
+    if (!rate) {
+        try {
+            const data = await fetchWithTimeout('https://latest.currency-api.pages.dev/v1/currencies/usd.json');
+            if (data?.usd?.twd) {
+                rate = parseFloat(data.usd.twd);
+            }
+        } catch (e) {
+            console.warn('備援匯率 API 亦連線失敗，保留預設值。', e);
+        }
+    }
+
+    if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+
+    if (rate && !isNaN(rate) && rate > 0) {
+        const formattedRate = Number(rate.toFixed(2));
+        latestFetchedRate = formattedRate;
+        if (exchangeRate) {
+            exchangeRate.value = formattedRate;
+        }
+        if (statusText) statusText.innerText = `即時匯率 ${formattedRate}`;
+
+        // 若結果已展開則同步重算
+        if (resultsContainer && !resultsContainer.classList.contains('hidden')) {
+            calculateAll();
+        }
+    } else {
+        if (statusText) statusText.innerText = '使用預設 (重試)';
+    }
+}
+
 // Reset to Defaults
 function resetDefaults() {
     if (fundName) fundName.value = "富蘭克林穩定月收益基金";
     if (navUSD) navUSD.value = 9.92;
-    if (exchangeRate) exchangeRate.value = 32.5;
+    if (exchangeRate) exchangeRate.value = latestFetchedRate || 32.5;
     if (investAmountTWD) investAmountTWD.value = "300,000";
     if (feePercent) feePercent.value = 4.3;
     if (mgmtFeeInput) mgmtFeeInput.value = "100";
@@ -459,6 +526,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
     checkMgmtFeeDisabledState();
 
+    // 綁定匯率重新整理按鈕並在進入頁面時自動抓取
+    const btnRefreshRate = document.getElementById('btnRefreshRate');
+    if (btnRefreshRate) {
+        btnRefreshRate.addEventListener('click', (e) => {
+            e.preventDefault();
+            fetchExchangeRate();
+        });
+    }
+    fetchExchangeRate();
+
     // 自動帶入 URL 參數 (例如從月配基金探勘儀一鍵跳轉)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('name') && fundName) {
@@ -468,7 +545,11 @@ window.addEventListener('DOMContentLoaded', () => {
         const pNav = parseFloat(urlParams.get('nav'));
         if (!isNaN(pNav) && pNav > 0) navUSD.value = pNav;
     }
-    if (urlParams.has('yield') && scen1Rate && navUSD) {
+    const pDiv = parseFloat(urlParams.get('div'));
+    if (!isNaN(pDiv) && pDiv > 0 && scen1Rate) {
+        scen1Rate.value = pDiv;
+        if (scen2Rate) scen2Rate.value = (pDiv * 0.82).toFixed(4);
+    } else if (urlParams.has('yield') && scen1Rate && navUSD) {
         const pYield = parseFloat(urlParams.get('yield'));
         const pNav = parseFloat(navUSD.value) || 10;
         if (!isNaN(pYield) && pYield > 0) {

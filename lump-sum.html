@@ -139,8 +139,14 @@
 
                     <!-- 美金匯率 (TWD) -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">美金匯率 (TWD) <span class="text-red-500">*</span></label>
-                        <input type="number" step="0.1" id="exchangeRate" value="32.5" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">美金匯率 (TWD) <span class="text-red-500">*</span></label>
+                            <button type="button" id="btnRefreshRate" class="text-xs text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-1 transition" title="重新抓取即時匯率">
+                                <i id="rateRefreshIcon" class="fa-solid fa-arrows-rotate"></i>
+                                <span id="rateStatusText">即時更新</span>
+                            </button>
+                        </div>
+                        <input type="number" step="0.01" id="exchangeRate" value="32.5" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
                     </div>
 
                     <!-- 手續費率 (%) -->
